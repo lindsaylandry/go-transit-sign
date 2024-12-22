@@ -4,9 +4,9 @@ import (
 	"flag"
 	"time"
 
-	"github.com/lindsaylandry/go-mta-train-sign/src/decoder"
-	"github.com/lindsaylandry/go-mta-train-sign/src/stations"
-	"github.com/lindsaylandry/go-mta-train-sign/src/trainfeed"
+	"github.com/lindsaylandry/go-mta-train-sign/src/nycmta/decoder"
+	"github.com/lindsaylandry/go-mta-train-sign/src/nycmta/stations"
+	"github.com/lindsaylandry/go-mta-train-sign/src/signdata"
 )
 
 func main() {
@@ -26,9 +26,9 @@ func main() {
 	feeds := decoder.GetMtaFeeds(station.DaytimeRoutes)
 
 	for {
-		arrivals := []trainfeed.Arrival{}
+		arrivals := []signdata.Arrival{}
 		for _, f := range *feeds {
-			t, err := trainfeed.NewTrainFeed(station, *key, *direction, f.URL)
+			t, err := signdata.NewSignData(station, *key, *direction, f.URL)
 			if err != nil {
 				panic(err)
 			}
@@ -40,7 +40,7 @@ func main() {
 		}
 
 		// Print all arrivals
-		trainfeed.PrintArrivals(arrivals, station.StopName)
+		signdata.PrintArrivals(arrivals, station.StopName)
 
 		if !*cont {
 			break

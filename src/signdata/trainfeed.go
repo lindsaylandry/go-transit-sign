@@ -1,4 +1,4 @@
-package trainfeed
+package signdata
 
 import (
 	"fmt"
@@ -6,11 +6,11 @@ import (
 	"sort"
 	"time"
 
-	"github.com/lindsaylandry/go-mta-train-sign/src/decoder"
-	"github.com/lindsaylandry/go-mta-train-sign/src/stations"
+	"github.com/lindsaylandry/go-mta-train-sign/src/nycmta/decoder"
+	"github.com/lindsaylandry/go-mta-train-sign/src/nycmta/stations"
 )
 
-type TrainFeed struct {
+type SignData struct {
 	Station   stations.MtaStation
 	Key       string
 	Direction string
@@ -23,8 +23,8 @@ type Arrival struct {
 	Secs int64
 }
 
-func NewTrainFeed(station stations.MtaStation, accessKey, direction, url string) (*TrainFeed, error) {
-	t := TrainFeed{}
+func NewSignData(station stations.MtaStation, accessKey, direction, url string) (*SignData, error) {
+	t := SignData{}
 
 	t.Key = accessKey
 	t.Direction = direction
@@ -37,7 +37,7 @@ func NewTrainFeed(station stations.MtaStation, accessKey, direction, url string)
 	return &t, err
 }
 
-func (t *TrainFeed) GetArrivals() []Arrival {
+func (t *SignData) GetArrivals() []Arrival {
 	stopID := t.Station.GTFSStopID + t.Direction
 	now := time.Now()
 	arrivals := []Arrival{}
