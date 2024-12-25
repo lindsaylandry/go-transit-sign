@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func Decode(k, url string) (gtfs.FeedMessage, error) {
+func DecodeGTFS(k, url string) (gtfs.FeedMessage, error) {
 	client := &http.Client{}
 	feed := gtfs.FeedMessage{}
 
@@ -38,7 +38,7 @@ func Decode(k, url string) (gtfs.FeedMessage, error) {
 }
 
 /*
-func DecodeJSON(k, url string) (json., error) {
+func DecodeJSON(k, url string) (CTABusFeedMessage, error) {
 
 }
 */

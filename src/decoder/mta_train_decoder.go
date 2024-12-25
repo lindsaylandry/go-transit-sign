@@ -4,8 +4,8 @@ import (
 	"strings"
 )
 
-func GetAllMtaFeeds() *[]Feed {
-	f := []Feed{
+func GetAllMtaTrainDecoders() *[]TrainDecoder {
+	f := []TrainDecoder{
 		{URL: "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-ace", Trains: []string{"A", "C", "E"}},
 		{URL: "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-g", Trains: []string{"G"}},
 		{URL: "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-bdfm", Trains: []string{"B", "D", "F", "M"}},
@@ -19,9 +19,9 @@ func GetAllMtaFeeds() *[]Feed {
 	return &f
 }
 
-func GetMtaFeeds(trains string) *[]Feed {
-	f := GetAllMtaFeeds()
-	fd := []Feed{}
+func GetMtaTrainDecoders(trains string) *[]TrainDecoder {
+	f := GetAllMtaTrainDecoders()
+	fd := []TrainDecoder{}
 
 	// parse space-separated list of trains
 	trns := strings.Split(trains, " ")

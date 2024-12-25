@@ -29,7 +29,7 @@ func NewTrainFeed(station stations.MtaStation, accessKey, direction, url string)
 
 	t.Station = station
 
-	feed, err := decoder.Decode(accessKey, url)
+	feed, err := decoder.DecodeGTFS(accessKey, url)
 	t.Feed = feed
 
 	return &t, err

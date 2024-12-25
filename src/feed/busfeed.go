@@ -11,7 +11,7 @@ type BusFeed struct {
 	BusStop busstops.BusStop
 	Key     string
 
-	Feed gtfs.FeedMessage
+	Feed decoder.CTABusFeedMessage
 }
 
 func NewBusFeed(busstop busstops.BusStop, accessKey, url string) (*BusFeed, error) {
@@ -19,10 +19,10 @@ func NewBusFeed(busstop busstops.BusStop, accessKey, url string) (*BusFeed, erro
 
 	b.Key = accessKey
 	b.BusStop = busstop
-	feed, err := decoder.Decode(accessKey, url)
-	t.Feed = feed
+	feed, err := decoder.DecodeJSON(accessKey, url)
+	b.Feed = feed
 
-	return &t, err
+	return &b, err
 }
 
 func (b *BusFeed) GetArrivals() []Arrival {
