@@ -1,4 +1,4 @@
-package signdata
+package trainfeed
 
 import (
 	"fmt"
@@ -6,11 +6,11 @@ import (
 	"sort"
 	"time"
 
-	"github.com/lindsaylandry/go-mta-train-sign/src/nycmta/decoder"
-	"github.com/lindsaylandry/go-mta-train-sign/src/nycmta/stations"
+	"github.com/lindsaylandry/go-mta-train-sign/src/decoder"
+	"github.com/lindsaylandry/go-mta-train-sign/src/stations"
 )
 
-type SignData struct {
+type TrainFeed struct {
 	Station   stations.MtaStation
 	Key       string
 	Direction string
@@ -20,10 +20,10 @@ type SignData struct {
 
 type Arrival struct {
 	Train string
-	Secs int64
+	Secs  int64
 }
 
-func NewSignData(station stations.MtaStation, accessKey, direction, url string) (*SignData, error) {
+func NewTrainFeed(station stations.MtaStation, accessKey, direction, url string) (*SignData, error) {
 	t := SignData{}
 
 	t.Key = accessKey
@@ -37,7 +37,7 @@ func NewSignData(station stations.MtaStation, accessKey, direction, url string) 
 	return &t, err
 }
 
-func (t *SignData) GetArrivals() []Arrival {
+func (t *TrainFeed) GetArrivals() []Arrival {
 	stopID := t.Station.GTFSStopID + t.Direction
 	now := time.Now()
 	arrivals := []Arrival{}
@@ -85,7 +85,7 @@ func PrintArrivals(arrivals []Arrival, name string) {
 		if a.Secs < 15 {
 			fmt.Printf("%s now\n", a.Train)
 		} else {
-			fmt.Printf("%s %d mins\n", a.Train, a.Secs / 60)
+			fmt.Printf("%s %d mins\n", a.Train, a.Secs/60)
 		}
 	}
 	fmt.Println()

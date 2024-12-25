@@ -1,25 +1,69 @@
 package main
 
 import (
-	"flag"
+	"fmt"
 	"time"
 
-	"github.com/lindsaylandry/go-mta-train-sign/src/nycmta/decoder"
-	"github.com/lindsaylandry/go-mta-train-sign/src/nycmta/stations"
+	"github.com/spf13/cobra"
+
+	"github.com/lindsaylandry/go-mta-train-sign/src/busstops"
+	"github.com/lindsaylandry/go-mta-train-sign/src/decoder"
 	"github.com/lindsaylandry/go-mta-train-sign/src/signdata"
+	"github.com/lindsaylandry/go-mta-train-sign/src/stations"
 )
 
+var stop, key, direction string
+var cont, train bool
+
 func main() {
-	stop := flag.String("s", "D30", "stop to parse")
-	direction := flag.String("d", "N", "direction of stop")
-	key := flag.String("k", "foobar", "access key")
-	cont := flag.Bool("c", true, "continue printing arrivals")
+	rootCmd := &cobra.Command{
+		Use:   "transit-sign",
+		Short: "Run transit sign",
+	}
 
-	flag.Parse()
+	nycMtaCmd := &cobra.Command{
+		Use:   "nyc-mta",
+		Short: "Run NYC MTA data",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return NYCMTA()
+		},
+	}
 
-	station, err := stations.GetStation(*stop)
+	ctaCmd := &cobra.Command{
+		Use:   "cta",
+		Short: "Run CTA data",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return CTA()
+		},
+	}
+
+	rootCmd.AddCommand(nycMtaCmd)
+	rootCmd.AddCommand(ctaCmd)
+
+	rootCmd.PersistentFlags().StringVarP(&stop, "stop", "s", "D30", "stop to parse")
+	rootCmd.PersistentFlags().StringVarP(&key, "key", "k", "foobar", "API access key")
+	rootCmd.PersistentFlags().BoolVarP(&cont, "continue", "c", true, "continue printing arrivals")
+	rootCmd.PersistentFlags().BoolVarP(&train, "train", "t", true, "train or bus (train=true, bus=false)")
+	rootCmd.PersistentFlags().StringVarP(&direction, "direction", "d", "N", "direction (trains only)")
+
+	rootCmd.Execute()
+}
+
+func CTA() error {
+	stop, err := busstops.GetBusStop(stop)
 	if err != nil {
-		panic(err)
+		return err
+	}
+
+	fmt.Println(stop)
+
+	return nil
+}
+
+func NYCMTA() error {
+	station, err := stations.GetStation(stop)
+	if err != nil {
+		return err
 	}
 
 	// Get subway feeds from station trains
@@ -28,9 +72,9 @@ func main() {
 	for {
 		arrivals := []signdata.Arrival{}
 		for _, f := range *feeds {
-			t, err := signdata.NewSignData(station, *key, *direction, f.URL)
+			t, err := signdata.NewSignData(station, key, direction, f.URL)
 			if err != nil {
-				panic(err)
+				return err
 			}
 
 			arr := t.GetArrivals()
@@ -42,10 +86,12 @@ func main() {
 		// Print all arrivals
 		signdata.PrintArrivals(arrivals, station.StopName)
 
-		if !*cont {
+		if !cont {
 			break
 		}
 
 		time.Sleep(5 * time.Second)
 	}
+
+	return nil
 }

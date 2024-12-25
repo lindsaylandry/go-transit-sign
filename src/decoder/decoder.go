@@ -36,3 +36,9 @@ func Decode(k, url string) (gtfs.FeedMessage, error) {
 	err = proto.Unmarshal(body, &feed)
 	return feed, err
 }
+
+/*
+func DecodeJSON(k, url string) (json., error) {
+
+}
+*/
