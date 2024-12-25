@@ -6,11 +6,11 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/lindsaylandry/go-mta-train-sign/src/busstops"
-	"github.com/lindsaylandry/go-mta-train-sign/src/decoder"
-	"github.com/lindsaylandry/go-mta-train-sign/src/feed"
-	"github.com/lindsaylandry/go-mta-train-sign/src/signdata"
-	"github.com/lindsaylandry/go-mta-train-sign/src/stations"
+	"github.com/lindsaylandry/go-transit-sign/src/busstops"
+	"github.com/lindsaylandry/go-transit-sign/src/decoder"
+	"github.com/lindsaylandry/go-transit-sign/src/feed"
+	"github.com/lindsaylandry/go-transit-sign/src/signdata"
+	"github.com/lindsaylandry/go-transit-sign/src/stations"
 )
 
 var stop, key, direction string

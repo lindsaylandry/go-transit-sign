@@ -1,4 +1,4 @@
-# go-mta-train-sign
+# go-transit-sign
 GoLang Project for downloading transit data and broadcasting to LED Matrix signs.
 
 Currently will print to STDOUT for MTA train lines.

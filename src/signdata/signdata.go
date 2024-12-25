@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/lindsaylandry/go-mta-train-sign/src/feed"
+	"github.com/lindsaylandry/go-transit-sign/src/feed"
 )
 
 func PrintArrivals(arrivals []feed.Arrival, name string) {

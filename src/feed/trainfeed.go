@@ -4,8 +4,8 @@ import (
 	"github.com/MobilityData/gtfs-realtime-bindings/golang/gtfs"
 	"time"
 
-	"github.com/lindsaylandry/go-mta-train-sign/src/decoder"
-	"github.com/lindsaylandry/go-mta-train-sign/src/stations"
+	"github.com/lindsaylandry/go-transit-sign/src/decoder"
+	"github.com/lindsaylandry/go-transit-sign/src/stations"
 )
 
 type TrainFeed struct {

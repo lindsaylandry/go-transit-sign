@@ -1,4 +1,4 @@
-module github.com/lindsaylandry/go-mta-train-sign
+module github.com/lindsaylandry/go-transit-sign
 
 go 1.21.3
 

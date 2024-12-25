@@ -3,8 +3,8 @@ package feed
 import (
 	"time"
 
-	"github.com/lindsaylandry/go-mta-train-sign/src/busstops"
-	"github.com/lindsaylandry/go-mta-train-sign/src/decoder"
+	"github.com/lindsaylandry/go-transit-sign/src/busstops"
+	"github.com/lindsaylandry/go-transit-sign/src/decoder"
 )
 
 type BusFeed struct {
