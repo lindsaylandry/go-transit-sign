@@ -8,6 +8,7 @@ import (
 
 	"github.com/lindsaylandry/go-mta-train-sign/src/busstops"
 	"github.com/lindsaylandry/go-mta-train-sign/src/decoder"
+	"github.com/lindsaylandry/go-mta-train-sign/src/feed"
 	"github.com/lindsaylandry/go-mta-train-sign/src/signdata"
 	"github.com/lindsaylandry/go-mta-train-sign/src/stations"
 )
@@ -70,13 +71,13 @@ func NYCMTA() error {
 	feeds := decoder.GetMtaFeeds(station.DaytimeRoutes)
 
 	for {
-		arrivals := []signdata.Arrival{}
+		arrivals := []feed.Arrival{}
 		for _, f := range *feeds {
-			t, err := signdata.NewSignData(station, key, direction, f.URL)
+			t, err := feed.NewTrainFeed(station, key, direction, f.URL)
 			if err != nil {
 				return err
 			}
-
+			
 			arr := t.GetArrivals()
 			for _, a := range arr {
 				arrivals = append(arrivals, a)

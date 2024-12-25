@@ -1,9 +1,7 @@
-package trainfeed
+package feed
 
 import (
-	"fmt"
 	"github.com/MobilityData/gtfs-realtime-bindings/golang/gtfs"
-	"sort"
 	"time"
 
 	"github.com/lindsaylandry/go-mta-train-sign/src/decoder"
@@ -23,8 +21,8 @@ type Arrival struct {
 	Secs  int64
 }
 
-func NewTrainFeed(station stations.MtaStation, accessKey, direction, url string) (*SignData, error) {
-	t := SignData{}
+func NewTrainFeed(station stations.MtaStation, accessKey, direction, url string) (*TrainFeed, error) {
+	t := TrainFeed{}
 
 	t.Key = accessKey
 	t.Direction = direction
@@ -70,23 +68,4 @@ func (t *TrainFeed) GetArrivals() []Arrival {
 	}
 
 	return arrivals
-}
-
-func PrintArrivals(arrivals []Arrival, name string) {
-	fmt.Printf("STATION %s\n", name)
-
-	if len(arrivals) == 0 {
-		fmt.Println("No trains arriving at this station today")
-		return
-	}
-
-	sort.Slice(arrivals, func(i, j int) bool { return arrivals[i].Secs < arrivals[j].Secs })
-	for _, a := range arrivals {
-		if a.Secs < 15 {
-			fmt.Printf("%s now\n", a.Train)
-		} else {
-			fmt.Printf("%s %d mins\n", a.Train, a.Secs/60)
-		}
-	}
-	fmt.Println()
 }
