@@ -49,12 +49,11 @@ Create an account and request an API key at https://www.ctabustracker.com/home
 
 ## References
 
-### GTFS
+### GTFS Protocol
 https://pkg.go.dev/github.com/MobilityData/gtfs-realtime-bindings/golang/gtfs
 
 ### NYC MTA
-http://web.mta.info/developers/data/nyct/subway/Stations.csv
+[Stagions CSV](http://web.mta.info/developers/data/nyct/subway/Stations.csv)
 
-### CTA (Chicago Transit Authority)
-https://www.transitchicago.com/developers/bustracker/
-
+### Chicago Transit Authority (CTA)
+[Train Tracker API Application](https://www.transitchicago.com/developers/traintrackerapply/)
