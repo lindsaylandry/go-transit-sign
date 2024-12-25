@@ -77,7 +77,7 @@ func NYCMTA() error {
 			if err != nil {
 				return err
 			}
-			
+
 			arr := t.GetArrivals()
 			for _, a := range arr {
 				arrivals = append(arrivals, a)
