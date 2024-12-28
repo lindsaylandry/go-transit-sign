@@ -16,10 +16,10 @@ func DecodeNYCMTA(k, url string) (gtfs.FeedMessage, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	req.Header.Add("x-api-key", k)
 	resp, err := client.Do(req)
-	defer resp.Body.Close()
 	if err != nil {
 		return feed, err
 	}
+	defer resp.Body.Close()
 
 	// read response code
 	// TODO: make more robust
@@ -49,10 +49,10 @@ func DecodeCTA(k, stopID, url string) (CTABusFeedMessage, error) {
 	req.URL.RawQuery = q.Encode()
 
 	resp, err := client.Do(req)
-	defer resp.Body.Close()
 	if err != nil {
 		return bf, err
 	}
+	defer resp.Body.Close()
 
 	// read response code
 	// TODO: make more robust
