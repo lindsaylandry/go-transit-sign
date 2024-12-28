@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/MobilityData/gtfs-realtime-bindings/golang/gtfs"
 	"google.golang.org/protobuf/proto"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -27,7 +27,7 @@ func DecodeNYCMTA(k, url string) (gtfs.FeedMessage, error) {
 		return feed, errors.New(http.StatusText(resp.StatusCode))
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return feed, err
 	}
@@ -60,7 +60,7 @@ func DecodeCTA(k, stopID, url string) (CTABusFeedMessage, error) {
 		return bf, errors.New(http.StatusText(resp.StatusCode))
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return bf, err
 	}

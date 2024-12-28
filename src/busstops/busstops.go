@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strconv"
 	"strings"
 
@@ -30,7 +30,7 @@ func GetBusStop(stopID string) (CTABusStop, error) {
 func readBusStops(filepath string) ([]CTABusStop, error) {
 	busStops := []CTABusStop{}
 	descriptions := KMLDescription{}
-	data, err := ioutil.ReadFile(filepath)
+	data, err := os.ReadFile(filepath)
 	if err != nil {
 		return busStops, err
 	}
