@@ -14,6 +14,10 @@ func DecodeNYCMTA(k, url string) (gtfs.FeedMessage, error) {
 	var client *http.Client
 
 	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return feed, err
+	}
+
 	req.Header.Add("x-api-key", k)
 	resp, err := client.Do(req)
 	if err != nil {
@@ -41,6 +45,9 @@ func DecodeCTA(k, stopID, url string) (CTABusFeedMessage, error) {
 	var client *http.Client
 
 	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return bf, err
+	}
 
 	q := req.URL.Query()
 	q.Add("key", k)

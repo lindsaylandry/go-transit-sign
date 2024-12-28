@@ -100,9 +100,7 @@ func NYCMTA() error {
 			}
 
 			arr := t.GetArrivals()
-			for _, a := range arr {
-				arrivals = append(arrivals, a)
-			}
+			arrivals = append(arrivals, arr...)
 		}
 
 		// Print all arrivals
