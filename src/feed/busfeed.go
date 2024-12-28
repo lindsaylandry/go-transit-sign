@@ -1,8 +1,6 @@
 package feed
 
 import (
-	//	"os"
-	"fmt"
 	"time"
 
 	"github.com/lindsaylandry/go-transit-sign/src/busstops"
@@ -43,8 +41,6 @@ func (b *BusFeed) GetArrivals() ([]Arrival, error) {
 		now := time.Now()
 		secs := t.Unix() - now.Unix()
 		arr.Secs = secs
-
-		fmt.Println(f.PredictedTime)
 
 		arrivals = append(arrivals, arr)
 	}

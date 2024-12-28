@@ -8,7 +8,7 @@ import (
 )
 
 func PrintArrivals(arrivals []feed.Arrival, name string) {
-	fmt.Printf("STATION %s\n", name)
+	fmt.Println(name)
 
 	if len(arrivals) == 0 {
 		fmt.Println("No trains arriving at this station today")
