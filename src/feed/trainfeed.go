@@ -30,7 +30,7 @@ func NewTrainFeed(station stations.MtaStation, accessKey, direction, url string)
 	t.Station = station
 
 	feed, err := decoder.DecodeNYCMTA(accessKey, url)
-	t.Feed = feed
+	t.Feed = *feed
 
 	return &t, err
 }
