@@ -31,9 +31,7 @@ func readStations(filepath string) ([]MtaStation, error) {
 	}
 	defer f.Close()
 
-	if err := gocsv.UnmarshalFile(f, &stations); err != nil {
-		return stations, err
-	}
+	err = gocsv.UnmarshalFile(f, &stations)
 
-	return stations, nil
+	return stations, err
 }

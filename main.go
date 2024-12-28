@@ -1,51 +1,117 @@
 package main
 
 import (
-	"flag"
 	"time"
 
-	"github.com/lindsaylandry/go-mta-train-sign/src/decoder"
-	"github.com/lindsaylandry/go-mta-train-sign/src/stations"
-	"github.com/lindsaylandry/go-mta-train-sign/src/trainfeed"
+	"github.com/spf13/cobra"
+
+	"github.com/lindsaylandry/go-transit-sign/src/busstops"
+	"github.com/lindsaylandry/go-transit-sign/src/decoder"
+	"github.com/lindsaylandry/go-transit-sign/src/feed"
+	"github.com/lindsaylandry/go-transit-sign/src/signdata"
+	"github.com/lindsaylandry/go-transit-sign/src/stations"
 )
 
+var stop, key, direction string
+var cont, train bool
+
 func main() {
-	stop := flag.String("s", "D30", "stop to parse")
-	direction := flag.String("d", "N", "direction of stop")
-	key := flag.String("k", "foobar", "access key")
-	cont := flag.Bool("c", true, "continue printing arrivals")
+	rootCmd := &cobra.Command{
+		Use:   "transit-sign",
+		Short: "Run transit sign",
+	}
 
-	flag.Parse()
+	nycMtaCmd := &cobra.Command{
+		Use:   "nyc-mta",
+		Short: "Run NYC MTA data",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return NYCMTA()
+		},
+	}
 
-	station, err := stations.GetStation(*stop)
+	ctaCmd := &cobra.Command{
+		Use:   "cta",
+		Short: "Run CTA data",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return CTA()
+		},
+	}
+
+	rootCmd.AddCommand(nycMtaCmd)
+	rootCmd.AddCommand(ctaCmd)
+
+	rootCmd.PersistentFlags().StringVarP(&stop, "stop", "s", "D30", "stop to parse")
+	rootCmd.PersistentFlags().StringVarP(&key, "key", "k", "foobar", "API access key")
+	rootCmd.PersistentFlags().BoolVarP(&cont, "continue", "c", true, "continue printing arrivals")
+	rootCmd.PersistentFlags().BoolVarP(&train, "train", "t", true, "train or bus (train=true, bus=false)")
+	rootCmd.PersistentFlags().StringVarP(&direction, "direction", "d", "N", "direction (trains only)")
+
+	err := rootCmd.Execute()
 	if err != nil {
 		panic(err)
 	}
+}
 
-	// Get subway feeds from station trains
-	feeds := decoder.GetMtaFeeds(station.DaytimeRoutes)
+func CTA() error {
+	stp, err := busstops.GetBusStop(stop)
+	if err != nil {
+		return err
+	}
 
 	for {
-		arrivals := []trainfeed.Arrival{}
-		for _, f := range *feeds {
-			t, err := trainfeed.NewTrainFeed(station, *key, *direction, f.URL)
-			if err != nil {
-				panic(err)
-			}
+		bf, err := feed.NewBusFeed(stp, key)
+		if err != nil {
+			return err
+		}
 
-			arr := t.GetArrivals()
-			for _, a := range arr {
-				arrivals = append(arrivals, a)
-			}
+		arrivals, err := bf.GetArrivals()
+		if err != nil {
+			return err
 		}
 
 		// Print all arrivals
-		trainfeed.PrintArrivals(arrivals, station.StopName)
+		signdata.PrintArrivals(arrivals, stp.Name)
 
-		if !*cont {
+		if !cont {
 			break
 		}
 
 		time.Sleep(5 * time.Second)
 	}
+
+	return nil
+}
+
+func NYCMTA() error {
+	station, err := stations.GetStation(stop)
+	if err != nil {
+		return err
+	}
+
+	// Get subway feeds from station trains
+	feeds := decoder.GetMtaTrainDecoders(station.DaytimeRoutes)
+
+	for {
+		arrivals := []feed.Arrival{}
+		for _, f := range *feeds {
+			t, err := feed.NewTrainFeed(station, key, direction, f.URL)
+			if err != nil {
+				return err
+			}
+
+			arr := t.GetArrivals()
+			arrivals = append(arrivals, arr...)
+		}
+
+		// Print all arrivals
+		signdata.PrintArrivals(arrivals, station.StopName)
+
+		if !cont {
+			break
+		}
+
+		time.Sleep(5 * time.Second)
+	}
+
+	return nil
 }
