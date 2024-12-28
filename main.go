@@ -46,7 +46,10 @@ func main() {
 	rootCmd.PersistentFlags().BoolVarP(&train, "train", "t", true, "train or bus (train=true, bus=false)")
 	rootCmd.PersistentFlags().StringVarP(&direction, "direction", "d", "N", "direction (trains only)")
 
-	rootCmd.Execute()
+	err := rootCmd.Execute()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func CTA() error {
