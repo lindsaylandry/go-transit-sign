@@ -17,7 +17,7 @@ type TrainFeed struct {
 }
 
 type Arrival struct {
-	Train string
+	Label string
 	Secs  int64
 }
 
@@ -29,7 +29,7 @@ func NewTrainFeed(station stations.MtaStation, accessKey, direction, url string)
 
 	t.Station = station
 
-	feed, err := decoder.DecodeGTFS(accessKey, url)
+	feed, err := decoder.DecodeNYCMTA(accessKey, url)
 	t.Feed = feed
 
 	return &t, err
@@ -58,7 +58,7 @@ func (t *TrainFeed) GetArrivals() []Arrival {
 					secs := *s.Arrival.Time + int64(delay) - now.Unix()
 
 					a := Arrival{}
-					a.Train = route
+					a.Label = route
 					a.Secs = secs
 
 					arrivals = append(arrivals, a)

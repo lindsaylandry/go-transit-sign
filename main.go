@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -51,12 +50,31 @@ func main() {
 }
 
 func CTA() error {
-	stop, err := busstops.GetBusStop(stop)
+	stp, err := busstops.GetBusStop(stop)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(stop)
+	for {
+		bf, err := feed.NewBusFeed(stp, key)
+		if err != nil {
+			return err
+		}
+
+		arrivals, err := bf.GetArrivals()
+		if err != nil {
+			return err
+		}
+
+		// Print all arrivals
+		signdata.PrintArrivals(arrivals, stp.Name)
+
+		if !cont {
+			break
+		}
+
+		time.Sleep(5 * time.Second)
+	}
 
 	return nil
 }
@@ -68,7 +86,7 @@ func NYCMTA() error {
 	}
 
 	// Get subway feeds from station trains
-	feeds := decoder.GetMtaFeeds(station.DaytimeRoutes)
+	feeds := decoder.GetMtaTrainDecoders(station.DaytimeRoutes)
 
 	for {
 		arrivals := []feed.Arrival{}

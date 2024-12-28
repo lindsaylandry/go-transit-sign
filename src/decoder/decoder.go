@@ -1,6 +1,7 @@
 package decoder
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/MobilityData/gtfs-realtime-bindings/golang/gtfs"
 	"google.golang.org/protobuf/proto"
@@ -8,11 +9,9 @@ import (
 	"net/http"
 )
 
-func DecodeGTFS(k, url string) (gtfs.FeedMessage, error) {
-	client := &http.Client{}
+func DecodeNYCMTA(k, url string) (gtfs.FeedMessage, error) {
 	feed := gtfs.FeedMessage{}
-
-	// TODO: get URL from train line
+	client := &http.Client{}
 
 	req, err := http.NewRequest("GET", url, nil)
 	req.Header.Add("x-api-key", k)
@@ -37,8 +36,36 @@ func DecodeGTFS(k, url string) (gtfs.FeedMessage, error) {
 	return feed, err
 }
 
-/*
-func DecodeJSON(k, url string) (CTABusFeedMessage, error) {
+func DecodeCTA(k, stopID, url string) (CTABusFeedMessage, error) {
+	bf := CTABusFeedMessage{}
+	client := &http.Client{}
 
+	req, err := http.NewRequest("GET", url, nil)
+
+	q := req.URL.Query()
+	q.Add("key", k)
+	q.Add("format", "json")
+	q.Add("stpid", stopID)
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := client.Do(req)
+	defer resp.Body.Close()
+	if err != nil {
+		return bf, err
+	}
+
+	// read response code
+	// TODO: make more robust
+	if resp.StatusCode >= 400 {
+		return bf, errors.New(http.StatusText(resp.StatusCode))
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return bf, err
+	}
+
+	err = json.Unmarshal(body, &bf)
+
+	return bf, nil
 }
-*/

@@ -18,9 +18,9 @@ func PrintArrivals(arrivals []feed.Arrival, name string) {
 	sort.Slice(arrivals, func(i, j int) bool { return arrivals[i].Secs < arrivals[j].Secs })
 	for _, a := range arrivals {
 		if a.Secs < 15 {
-			fmt.Printf("%s now\n", a.Train)
+			fmt.Printf("%s now\n", a.Label)
 		} else {
-			fmt.Printf("%s %d mins\n", a.Train, a.Secs/60)
+			fmt.Printf("%s %d mins\n", a.Label, a.Secs/60)
 		}
 	}
 	fmt.Println()
