@@ -74,5 +74,5 @@ func DecodeCTA(k, stopID, url string) (CTABusFeedMessage, error) {
 
 	err = json.Unmarshal(body, &bf)
 
-	return bf, nil
+	return bf, err
 }
