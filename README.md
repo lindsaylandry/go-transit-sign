@@ -3,7 +3,7 @@ GoLang Project for downloading transit data and broadcasting to LED Matrix signs
 
 Currently will print to STDOUT for MTA train lines.
 
-Broadcasting to LED Matrix and ability to use more than MTA data is a work in progress.
+Broadcasting to LED Matrix is a work in progress.
 
 ## How to Use
 
@@ -49,11 +49,17 @@ Create an account and request an API key at https://www.ctabustracker.com/home
 
 ## References
 
-### GTFS Protocol
+### LED Matrix
+
+[Adafruit LED Matrix Pinouts](https://learn.adafruit.com/adafruit-rgb-matrix-bonnet-for-raspberry-pi/pinouts)
+
+### Transit Data
+
+#### GTFS Protocol
 https://pkg.go.dev/github.com/MobilityData/gtfs-realtime-bindings/golang/gtfs
 
-### NYC MTA
-[Stagions CSV](http://web.mta.info/developers/data/nyct/subway/Stations.csv)
+#### NYC MTA
+[Stations CSV](http://web.mta.info/developers/data/nyct/subway/Stations.csv)
 
-### Chicago Transit Authority (CTA)
+#### Chicago Transit Authority (CTA)
 [Train Tracker API Application](https://www.transitchicago.com/developers/traintrackerapply/)
