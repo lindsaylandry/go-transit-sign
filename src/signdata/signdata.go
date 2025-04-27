@@ -21,7 +21,7 @@ func PrintArrivalsToStdout(arrivals []feed.Arrival, name string) {
 		if a.Secs < 15 {
 			fmt.Printf("%s now\n", a.Label)
 		} else {
-			fmt.Printf("%s %d mins\n", a.Label, a.Secs/60)
+			fmt.Printf("%s %d min\n", a.Label, a.Secs/60)
 		}
 	}
 	fmt.Println()
@@ -32,7 +32,7 @@ func PrintArrivals(arrivals []feed.Arrival, name string) error {
 	if err != nil {
 		return err
 	}
-
+	fmt.Println(len(assembly[0]))
   printAssembly(assembly)
 
 	if len(arrivals) == 0 {
@@ -44,14 +44,13 @@ func PrintArrivals(arrivals []feed.Arrival, name string) error {
 	var str string
   for _, a := range arrivals {
     if a.Secs < 15 {
-      str = fmt.Sprintf("%s now", a.Label)
+      str = "now"
     } else {
-      str = fmt.Sprintf("%s %d min", a.Label, a.Secs/60)
+      str = fmt.Sprintf("%d min", a.Secs/60)
     }
+		assembly, err = writer.CreateVisualNextArrival(a.Label, str, 64)
+  	printAssembly(assembly)
   }
-
-	assembly, err = writer.CreateVisualString(str)
-  printAssembly(assembly)
 
 	return nil
 }

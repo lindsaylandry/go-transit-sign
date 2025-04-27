@@ -22,7 +22,7 @@ func CreateVisualString(stop string) ([][]uint8, error) {
 		length += len(val.Design[0]) + 1
 	}
 
-	str := make([][]uint8, 6)
+	str := make([][]uint8, len(l['0'].Design))
 	for i := range str {
     str[i] = make([]uint8, length)
 	}
@@ -30,7 +30,6 @@ func CreateVisualString(stop string) ([][]uint8, error) {
 	startCol := 0
 	// second pass - put letters in matrix
 	for _, r := range stop {	
-		//str[:][startCol:end] = val.Design
 		for i, a := range l[r].Design {
 			for j, b := range a {
 				str[i][startCol+j] = b
@@ -39,6 +38,42 @@ func CreateVisualString(stop string) ([][]uint8, error) {
 
 		startCol += len(l[r].Design[0]) + 1
 	}
+
+	return str, nil
+}
+
+func CreateVisualNextArrival(dest string, timeLeft string, maxWidth int) ([][]uint8, error) {
+	destMatrix, err := CreateVisualString(dest)
+	if err != nil {
+		return [][]uint8{}, err
+	}
+	timeLeftMatrix, errStr := CreateVisualString(timeLeft)
+	if err != nil {
+		return [][]uint8{}, errStr
+	}
+
+	l := getLetters()
+
+	str := make([][]uint8, len(l['0'].Design))
+	for i := range str {
+    str[i] = make([]uint8, maxWidth)
+  }
+
+	// Combine dest (left align) and time (right align)
+	// TODO: what if strings are longer than max width?
+	// first - left align
+	for i, a := range destMatrix {
+    for j, b := range a {
+       str[i][j] = b
+    }
+  }
+
+	// next - right align
+	for i, a := range timeLeftMatrix {
+    for j, b := range a {
+      str[i][len(str[i])-len(timeLeftMatrix[0])+j] = b
+    }
+  }
 
 	return str, nil
 }
