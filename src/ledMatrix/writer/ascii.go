@@ -1,15 +1,59 @@
 package writer
 
 type Letter struct {
-	Design [][6]bool
+	Design [6][]uint8
 }
 
 func getLetters() map[rune]Letter {
 	letters := make(map[rune]Letter)
 
 	// basic ascii letters and numbers
+	letters[' '] = Letter{
+    Design: [6][]uint8 {
+      {0},
+      {0},
+      {0},
+      {0},
+      {0},
+      {0},
+    },
+  }
+
+	letters['.'] = Letter{
+    Design: [6][]uint8 {
+      {0},
+      {0},
+      {0},
+      {0},
+      {1},
+      {0},
+    },
+  }
+
+	letters[','] = Letter{
+    Design: [6][]uint8 {
+      {0},
+      {0},
+      {0},
+      {0},
+      {1},
+      {1},
+    },
+  }
+
+	letters['&'] = Letter{
+    Design: [6][]uint8 {
+      {0, 0, 0},
+      {0, 1, 0},
+      {1, 1, 1},
+      {0, 1, 0},
+      {0, 0, 0},
+      {0, 0, 0},
+    },
+  }
+
 	letters['a'] = Letter{
-		Design: [][6]bool {
+		Design: [6][]uint8 {
 			{0, 0, 0},
 			{0, 0, 0},
 			{0, 1, 1},
@@ -20,7 +64,7 @@ func getLetters() map[rune]Letter {
 	}
 
 	letters['b'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {1, 0, 0},
       {1, 0, 0},
       {1, 1, 0},
@@ -31,7 +75,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['c'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {0, 0, 0},
       {0, 0, 0},
       {0, 1, 1},
@@ -42,7 +86,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['d'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {0, 0, 1},
       {0, 0, 1},
       {0, 1, 1},
@@ -53,7 +97,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['e'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {0, 0, 0},
       {0, 1, 1},
       {1, 1, 1},
@@ -64,7 +108,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['f'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {0, 1},
       {1, 0},
       {1, 1},
@@ -75,7 +119,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['g'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {0, 0, 0},
       {0, 1, 0},
       {1, 0, 1},
@@ -86,7 +130,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['h'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {1, 0, 0},
       {1, 0, 0},
       {1, 1, 0},
@@ -97,7 +141,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['i'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {0},
       {1},
       {0},
@@ -108,7 +152,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['j'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {0, 0},
       {0, 1},
       {0, 0},
@@ -119,7 +163,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['k'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {1, 0, 0},
       {1, 0, 0},
       {1, 0, 1},
@@ -130,7 +174,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['l'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {1},
       {1},
       {1},
@@ -141,7 +185,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['m'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {0, 0, 0, 0, 0},
       {0, 0, 0, 0, 0},
       {1, 1, 0, 1, 0},
@@ -152,7 +196,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['n'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {0, 0, 0},
       {0, 0, 0},
       {1, 1, 0},
@@ -163,7 +207,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['o'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {0, 0, 0},
       {0, 0, 0},
       {0, 1, 0},
@@ -174,7 +218,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['p'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {0, 0, 0},
       {0, 0, 0},
       {1, 1, 0},
@@ -185,7 +229,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['q'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {0, 0, 0},
       {0, 0, 0},
       {0, 1, 1},
@@ -196,7 +240,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['r'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {0, 0},
       {0, 0},
       {1, 1},
@@ -207,7 +251,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['s'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {0, 0},
       {1, 1},
       {1, 0},
@@ -218,18 +262,18 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['t'] = Letter{
-    Design: [][6]bool {
-      {0, 0, 0},
+    Design: [6][]uint8 {
       {0, 1, 0},
       {1, 1, 1},
       {0, 1, 0},
-      {0, 1, 1},
+      {0, 1, 0},
+      {0, 0, 1},
       {0, 0, 0},
     },
   }
 
 	letters['u'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {0, 0, 0},
       {0, 0, 0},
       {1, 0, 1},
@@ -240,7 +284,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['v'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {0, 0, 0},
       {0, 0, 0},
       {1, 0, 1},
@@ -251,7 +295,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['w'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {0, 0, 0, 0, 0},
       {0, 0, 0, 0, 0},
       {1, 0, 0, 0, 1},
@@ -262,7 +306,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['x'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {0, 0, 0},
       {0, 0, 0},
       {1, 0, 1},
@@ -273,7 +317,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['y'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {0, 0, 0},
       {0, 0, 0},
       {1, 0, 1},
@@ -284,7 +328,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['z'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {0, 0},
       {1, 1},
       {0, 1},
@@ -295,7 +339,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['A'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {0, 1, 0},
       {1, 0, 1},
       {1, 1, 1},
@@ -306,7 +350,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['B'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {1, 1, 0},
       {1, 0, 1},
       {1, 1, 0},
@@ -317,7 +361,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['C'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {0, 1, 0},
       {1, 0, 1},
       {1, 0, 0},
@@ -328,7 +372,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['D'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {1, 1, 0},
       {1, 0, 1},
       {1, 0, 1},
@@ -339,7 +383,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['E'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {1, 1, 1},
       {1, 0, 0},
       {1, 1, 1},
@@ -350,7 +394,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['F'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {1, 1, 1},
       {1, 0, 0},
       {1, 1, 1},
@@ -361,7 +405,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['G'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {0, 1, 1},
       {1, 0, 0},
       {1, 0, 1},
@@ -372,7 +416,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['H'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {1, 0, 1},
       {1, 0, 1},
       {1, 1, 1},
@@ -383,7 +427,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['I'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {1, 1, 1},
       {0, 1, 0},
       {0, 1, 0},
@@ -394,7 +438,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['J'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {1, 1, 1},
       {0, 0, 1},
       {0, 0, 1},
@@ -405,7 +449,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['K'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {1, 0, 1},
       {1, 0, 1},
       {1, 1, 0},
@@ -416,7 +460,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['L'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {1, 0, 0},
       {1, 0, 0},
       {1, 0, 0},
@@ -427,7 +471,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['M'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {1, 0, 0, 0, 1},
       {1, 1, 0, 1, 1},
       {1, 0, 1, 0, 1},
@@ -438,7 +482,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['N'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {1, 0, 0, 1},
       {1, 1, 0, 1},
       {1, 0, 1, 1},
@@ -449,7 +493,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['O'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {0, 1, 0},
       {1, 0, 1},
       {1, 0, 1},
@@ -460,7 +504,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['P'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {1, 1, 0},
       {1, 0, 1},
       {1, 1, 0},
@@ -471,7 +515,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['Q'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {0, 1, 0, 0},
       {1, 0, 1, 0},
       {1, 0, 1, 0},
@@ -482,7 +526,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['R'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {1, 1, 0},
       {1, 0, 1},
       {1, 1, 0},
@@ -493,7 +537,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['S'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {0, 1, 1},
       {1, 0, 0},
       {1, 1, 1},
@@ -504,7 +548,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['T'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {1, 1, 1},
       {0, 1, 0},
       {0, 1, 0},
@@ -515,7 +559,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['U'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {1, 0, 1},
       {1, 0, 1},
       {1, 0, 1},
@@ -526,7 +570,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['V'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {1, 0, 1},
       {1, 0, 1},
       {1, 0, 1},
@@ -537,7 +581,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['W'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {1, 0, 0, 0, 1},
       {1, 0, 0, 0, 1},
       {1, 0, 0, 0, 1},
@@ -548,7 +592,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['X'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {1, 0, 1},
       {1, 0, 1},
       {0, 1, 0},
@@ -559,7 +603,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['Y'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {1, 0, 1},
       {1, 0, 1},
       {0, 1, 1},
@@ -570,7 +614,7 @@ func getLetters() map[rune]Letter {
   }
 
 	letters['Z'] = Letter{
-    Design: [][6]bool {
+    Design: [6][]uint8 {
       {1, 1, 1},
       {0, 0, 1},
       {0, 1, 0},
@@ -579,5 +623,104 @@ func getLetters() map[rune]Letter {
       {0, 0, 0},
     },
   }
-//	return letters
+
+	letters['1'] = Letter{
+    Design: [6][]uint8 {
+      {0, 1, 0},
+      {1, 1, 0},
+      {0, 1, 0},
+      {0, 1, 0},
+      {1, 1, 1},
+      {0, 0, 0},
+    },
+  }
+
+	letters['2'] = Letter{
+    Design: [6][]uint8 {
+      {1, 1, 0},
+      {0, 0, 1},
+      {0, 1, 0},
+      {1, 0, 0},
+      {1, 1, 1},
+      {0, 0, 0},
+    },
+  }
+
+	letters['3'] = Letter{
+    Design: [6][]uint8 {
+      {1, 1, 0},
+      {0, 0, 1},
+      {0, 1, 0},
+      {0, 0, 1},
+      {1, 1, 0},
+      {0, 0, 0},
+    },
+  }
+
+	letters['4'] = Letter{
+    Design: [6][]uint8 {
+      {1, 0, 1},
+      {1, 0, 1},
+      {1, 1, 1},
+      {0, 0, 1},
+      {0, 0, 1},
+      {0, 0, 0},
+    },
+  }
+
+	letters['5'] = Letter{
+    Design: [6][]uint8 {
+      {1, 1, 1},
+      {1, 0, 0},
+      {1, 1, 0},
+      {0, 0, 1},
+      {1, 1, 0},
+      {0, 0, 0},
+    },
+  }
+
+	letters['6'] = Letter{
+    Design: [6][]uint8 {
+      {0, 1, 0},
+      {1, 0, 0},
+      {1, 1, 0},
+      {1, 0, 1},
+      {0, 1, 0},
+      {0, 0, 0},
+    },
+  }
+
+	letters['7'] = Letter{
+    Design: [6][]uint8 {
+      {1, 1, 1},
+      {0, 0, 1},
+      {0, 0, 1},
+      {0, 0, 1},
+      {0, 0, 1},
+      {0, 0, 0},
+    },
+  }
+
+	letters['8'] = Letter{
+    Design: [6][]uint8 {
+      {0, 1, 0},
+      {1, 0, 1},
+      {0, 1, 0},
+      {1, 0, 1},
+      {0, 1, 0},
+      {0, 0, 0},
+    },
+  }
+
+	letters['9'] = Letter{
+    Design: [6][]uint8 {
+      {0, 1, 0},
+      {1, 0, 1},
+      {0, 1, 1},
+      {0, 0, 1},
+      {0, 1, 0},
+      {0, 0, 0},
+    },
+  }
+	return letters
 }

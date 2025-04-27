@@ -1,7 +1,7 @@
 package ledMatrix
 
 import (
-	"github.com/tfk1410/go-rpi-rgb-led-matrix"
+	//"github.com/tfk1410/go-rpi-rgb-led-matrix"
 )
 
 type LedMatrixConfig struct {
@@ -17,25 +17,26 @@ type LedMatrixConfig struct {
 }
 
 type LedMatrix struct {
-
+ 	Config LedMatrixConfig
+	Color string
 }
 
 func NewLedMatrix() (*LedMatrix, error) {
 	led := LedMatrix{}
 
-	led.Rows = 32
-	led.Cols = 64
+	led.Config.Rows = 32
+	led.Config.Cols = 64
 
 	return &led	
 }
 
-func(*l LedMatrix) PrintMatrix()  error {
-	if err := rpio.Open(); err != nil {
-		return err
-	}
-	defer rpio.Close()
-}
+//func(*l LedMatrix) PrintMatrix()  error {
+//	if err := rpio.Open(); err != nil {
+//		return err
+//	}
+//	defer rpio.Close()
+//}
 
 func(*l LedMatrix) PrintTitle(title string) error {
-
+	
 }
