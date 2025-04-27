@@ -5,7 +5,7 @@ import (
 	"sort"
 
 	"github.com/lindsaylandry/go-transit-sign/src/feed"
-	"github.com/lindsaylandry/go-transit-sign/src/ledMatrix/writer"
+	"github.com/lindsaylandry/go-transit-sign/src/signdata/writer"
 )
 
 func PrintArrivalsToStdout(arrivals []feed.Arrival, name string) {
