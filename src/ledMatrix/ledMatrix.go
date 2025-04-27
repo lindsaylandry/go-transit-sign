@@ -1,7 +1,7 @@
 package ledMatrix
 
 import (
-	"github.com/mcuadros/go-rpi-rgb-led-matrix"
+	"github.com/tfk1410/go-rpi-rgb-led-matrix"
 )
 
 type LedMatrixConfig struct {
@@ -16,13 +16,17 @@ type LedMatrixConfig struct {
 	disableHardwarePulsing bool
 }
 
+type LedMatrix struct {
+
+}
+
 func NewLedMatrix() (*LedMatrix, error) {
 	led := LedMatrix{}
 
 	led.Rows = 32
 	led.Cols = 64
 
-	return led	
+	return &led	
 }
 
 func(*l LedMatrix) PrintMatrix()  error {
@@ -30,4 +34,8 @@ func(*l LedMatrix) PrintMatrix()  error {
 		return err
 	}
 	defer rpio.Close()
+}
+
+func(*l LedMatrix) PrintTitle(title string) error {
+
 }
