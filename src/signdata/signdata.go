@@ -9,18 +9,6 @@ import (
 	"github.com/lindsaylandry/go-transit-sign/src/signdata/writer"
 )
 
-type LedMatrixConfig struct {
-	Rows                   int
-	Cols                   int
-	Parallel               int
-	Chain                  int
-	Brightness             int
-	HardwareMapping        string
-	ShowRefresh            bool
-	inverse_colors         bool
-	disableHardwarePulsing bool
-}
-
 type SignData struct {
 	Visual [32][64]uint8
 	Image  image.Image
