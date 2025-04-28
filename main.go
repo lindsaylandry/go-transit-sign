@@ -13,7 +13,7 @@ import (
 )
 
 var stop, key, direction string
-var cont, train bool
+var cont, train, led bool
 
 func main() {
 	rootCmd := &cobra.Command{
@@ -45,6 +45,7 @@ func main() {
 	rootCmd.PersistentFlags().BoolVarP(&cont, "continue", "c", true, "continue printing arrivals")
 	rootCmd.PersistentFlags().BoolVarP(&train, "train", "t", true, "train or bus (train=true, bus=false)")
 	rootCmd.PersistentFlags().StringVarP(&direction, "direction", "d", "N", "direction (trains only)")
+	rootCmd.PersistentFlags().BoolVarP(&led, "led", "l", false, "output to led matrix")
 
 	err := rootCmd.Execute()
 	if err != nil {
@@ -70,10 +71,14 @@ func CTA() error {
 		}
 
 		// Print all arrivals
-		sd := signdata.NewSignData()
-		err = sd.PrintArrivals(arrivals, stp.Name, stp.Direction)
-		if err != nil {
-			return err
+		if led {
+			sd := signdata.NewSignData()
+			err = sd.PrintArrivals(arrivals, stp.Name, stp.Direction)
+			if err != nil {
+				return err
+			}
+		} else {
+			signdata.PrintArrivalsToStdout(arrivals, stp.Name, stp.Direction)
 		}
 
 		if !cont {
@@ -108,10 +113,14 @@ func NYCMTA() error {
 		}
 
 		// Print all arrivals
-		sd := signdata.NewSignData()
-		err := sd.PrintArrivals(arrivals, station.StopName, direction)
-		if err != nil {
-			return err
+		if led {
+			sd := signdata.NewSignData()
+			err := sd.PrintArrivals(arrivals, station.StopName, direction)
+			if err != nil {
+				return err
+			}
+		} else {
+			signdata.PrintArrivalsToStdout(arrivals, station.StopName, direction)
 		}
 
 		if !cont {

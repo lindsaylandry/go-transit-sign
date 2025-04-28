@@ -50,6 +50,7 @@ func PrintArrivalsToStdout(arrivals []feed.Arrival, name, direction string) {
 			fmt.Printf("%s %d min\n", a.Label, a.Secs/60)
 		}
 	}
+	fmt.Println(direction)
 	fmt.Println()
 }
 
