@@ -13,4 +13,5 @@ type CTABusStop struct {
 	StopID    string
 	PositionX float64
 	PositionY float64
+	Direction string
 }

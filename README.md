@@ -26,6 +26,7 @@ Flags:
   -d, --direction string   direction (trains only) (default "N")
   -h, --help               help for transit-sign
   -k, --key string         API access key (default "foobar")
+  -l, --led                output to led matrix
   -s, --stop string        stop to parse (default "D30")
   -t, --train              train or bus (train=true, bus=false) (default true)
 
