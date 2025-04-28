@@ -2,7 +2,6 @@ package writer
 
 import (
 	//	"image"
-	"errors"
 	"fmt"
 )
 
@@ -16,7 +15,7 @@ func CreateVisualString(stop string) ([][]uint8, error) {
 		// return error if rune is not in list of ascii letters
 		val, ok := l[r]
 		if !ok {
-			return [][]uint8{}, errors.New(fmt.Sprintf("The letter %r does not exist in pixel library", r))
+			return [][]uint8{}, fmt.Errorf("The letter %r does not exist in pixel library", r)
 		}
 
 		length += len(val.Design[0]) + 1
@@ -52,9 +51,7 @@ func CreateVisualNextArrival(dest string, timeLeft string, maxWidth int) ([][]ui
 		return [][]uint8{}, errStr
 	}
 
-	l := getLetters()
-
-	str := make([][]uint8, len(l['0'].Design))
+	str := make([][]uint8, len(destMatrix))
 	for i := range str {
 		str[i] = make([]uint8, maxWidth)
 	}

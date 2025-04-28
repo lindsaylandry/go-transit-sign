@@ -65,6 +65,9 @@ func (sd *SignData) PrintArrivals(arrivals []feed.Arrival, name, direction strin
 			str = fmt.Sprintf("%d min", a.Secs/60)
 		}
 		assembly, err = writer.CreateVisualNextArrival(a.Label, str, 64)
+		if err != nil {
+			return err
+		}
 		sd.addArrival(assembly, i)
 	}
 
