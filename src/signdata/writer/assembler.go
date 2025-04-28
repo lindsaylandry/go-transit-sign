@@ -15,7 +15,7 @@ func CreateVisualString(stop string) ([][]uint8, error) {
 		// return error if rune is not in list of ascii letters
 		val, ok := l[r]
 		if !ok {
-			return [][]uint8{}, fmt.Errorf("The letter %r does not exist in pixel library", r)
+			return [][]uint8{}, fmt.Errorf("The letter %c does not exist in pixel library", r)
 		}
 
 		length += len(val.Design[0]) + 1
@@ -60,9 +60,7 @@ func CreateVisualNextArrival(dest string, timeLeft string, maxWidth int) ([][]ui
 	// TODO: what if strings are longer than max width?
 	// first - left align
 	for i, a := range destMatrix {
-		for j, b := range a {
-			str[i][j] = b
-		}
+		copy(str[i][:], a)
 	}
 
 	// next - right align
