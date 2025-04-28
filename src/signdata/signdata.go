@@ -50,7 +50,9 @@ func PrintArrivalsToStdout(arrivals []feed.Arrival, name, direction string) {
 			fmt.Printf("%s %d min\n", a.Label, a.Secs/60)
 		}
 	}
-	fmt.Println(direction)
+	dir := getDirection(direction)
+
+	fmt.Println(dir)
 	fmt.Println()
 }
 
@@ -78,11 +80,12 @@ func (sd *SignData) PrintArrivals(arrivals []feed.Arrival, name, direction strin
   	sd.addArrival(assembly, i)
   }
 
-	assembly, err = writer.CreateVisualString(direction)
+	dir := getDirection(direction)
+
+	assembly, err = writer.CreateVisualString(dir)
 	if err != nil {
 		return err
 	}
-
 	sd.addDirection(assembly)
 
 	sd.printMatrix()
@@ -140,4 +143,30 @@ func (sd *SignData) printMatrix() {
     }
     fmt.Printf("\n")
   }
+}
+
+func getDirection(direction string) string {
+	var dir string
+	switch direction {
+	case "N", "NB", "NORTH", "North":
+		dir = "Northbound"
+	case "S", "SB", "SOUTH", "South":
+		dir = "Southbound"
+	case "W", "WB", "WEST", "West":
+		dir = "Westbound"
+	case "E", "EB", "EAST", "East":
+		dir = "Eastbound"
+	case "NW", "NWB", "NORTHWEST", "Northwest":
+		dir = "Northwestbound"
+	case "SW", "SWB", "SOUTHWEST", "Southwest":
+		dir = "Southwestbound"
+	case "NE", "NEB", "NORTHEAST", "Northeast":
+		dir = "Northeastbound"
+	case "SE", "SEB", "SOUTHEAST", "Southeast":
+		dir = "Southeastbound"
+	default:
+		dir = direction
+	}
+
+	return dir
 }
