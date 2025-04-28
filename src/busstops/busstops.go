@@ -68,6 +68,8 @@ func readBusStops(filepath string) ([]CTABusStop, error) {
 				bus.StopID = content[i+1]
 			case "PUBLIC_NAME":
 				bus.Name = content[i+1]
+			case "DIR":
+				bus.Direction = content[i+1]
 			case "POINT_X":
 				bus.PositionX, err = strconv.ParseFloat(content[i+1], 64)
 			case "POINT_Y":

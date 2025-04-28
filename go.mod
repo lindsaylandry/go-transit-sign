@@ -1,6 +1,8 @@
 module github.com/lindsaylandry/go-transit-sign
 
-go 1.21.3
+go 1.23.0
+
+toolchain go1.24.1
 
 require (
 	github.com/MobilityData/gtfs-realtime-bindings/golang/gtfs v1.0.0

@@ -70,7 +70,8 @@ func CTA() error {
 		}
 
 		// Print all arrivals
-		err = signdata.PrintArrivals(arrivals, stp.Name)
+		sd := signdata.NewSignData()
+		err = sd.PrintArrivals(arrivals, stp.Name, stp.Direction)
 		if err != nil {
 			return err
 		}
@@ -107,7 +108,8 @@ func NYCMTA() error {
 		}
 
 		// Print all arrivals
-		err := signdata.PrintArrivals(arrivals, station.StopName)
+		sd := signdata.NewSignData()
+		err := sd.PrintArrivals(arrivals, station.StopName, direction)
 		if err != nil {
 			return err
 		}
