@@ -1,9 +1,9 @@
 package writer
 
 import (
-//	"image"
-	"fmt"
+	//	"image"
 	"errors"
+	"fmt"
 )
 
 func CreateVisualString(stop string) ([][]uint8, error) {
@@ -18,23 +18,23 @@ func CreateVisualString(stop string) ([][]uint8, error) {
 		if !ok {
 			return [][]uint8{}, errors.New(fmt.Sprintf("The letter %r does not exist in pixel library", r))
 		}
-		
+
 		length += len(val.Design[0]) + 1
 	}
 
 	str := make([][]uint8, len(l['0'].Design))
 	for i := range str {
-    str[i] = make([]uint8, length)
+		str[i] = make([]uint8, length)
 	}
 
 	startCol := 0
 	// second pass - put letters in matrix
-	for _, r := range stop {	
+	for _, r := range stop {
 		for i, a := range l[r].Design {
 			for j, b := range a {
 				str[i][startCol+j] = b
 			}
-		}	
+		}
 
 		startCol += len(l[r].Design[0]) + 1
 	}
@@ -56,24 +56,24 @@ func CreateVisualNextArrival(dest string, timeLeft string, maxWidth int) ([][]ui
 
 	str := make([][]uint8, len(l['0'].Design))
 	for i := range str {
-    str[i] = make([]uint8, maxWidth)
-  }
+		str[i] = make([]uint8, maxWidth)
+	}
 
 	// Combine dest (left align) and time (right align)
 	// TODO: what if strings are longer than max width?
 	// first - left align
 	for i, a := range destMatrix {
-    for j, b := range a {
-       str[i][j] = b
-    }
-  }
+		for j, b := range a {
+			str[i][j] = b
+		}
+	}
 
 	// next - right align
 	for i, a := range timeLeftMatrix {
-    for j, b := range a {
-      str[i][len(str[i])-len(timeLeftMatrix[0])+j] = b
-    }
-  }
+		for j, b := range a {
+			str[i][len(str[i])-len(timeLeftMatrix[0])+j] = b
+		}
+	}
 
 	return str, nil
 }
