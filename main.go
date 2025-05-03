@@ -9,6 +9,7 @@ import (
 	"github.com/lindsaylandry/go-transit-sign/src/decoder"
 	"github.com/lindsaylandry/go-transit-sign/src/feed"
 	"github.com/lindsaylandry/go-transit-sign/src/signdata"
+	"github.com/lindsaylandry/go-transit-sign/src/signdata/ledMatrix"
 	"github.com/lindsaylandry/go-transit-sign/src/stations"
 )
 
@@ -37,8 +38,17 @@ func main() {
 		},
 	}
 
+	testMatrix := &cobra.Command{
+		Use: "testMatrix",
+		Short: "Test LED Matrix",
+		RunE: func(cmd *cobra.Command, args []string) error {
+      return TestMatrix()
+    }, 
+	}
+
 	rootCmd.AddCommand(nycMtaCmd)
 	rootCmd.AddCommand(ctaCmd)
+	rootCmd.AddCommand(testMatrix)
 
 	rootCmd.PersistentFlags().StringVarP(&stop, "stop", "s", "D30", "stop to parse")
 	rootCmd.PersistentFlags().StringVarP(&key, "key", "k", "foobar", "API access key")
@@ -131,4 +141,8 @@ func NYCMTA() error {
 	}
 
 	return nil
+}
+
+func TestMatrix() error {
+	return ledMatrix.WriteToMatrix()
 }
