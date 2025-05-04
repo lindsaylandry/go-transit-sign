@@ -13,7 +13,7 @@ import (
 
 type SignData struct {
 	Visual [32][64]uint8
-	Matrix rgbmatrix.Matrix
+	Canvas *rgbmatrix.Canvas
 }
 
 func NewSignData() (*SignData, error) {
@@ -35,7 +35,10 @@ func NewSignData() (*SignData, error) {
     return &sd, err
   }
 
-	sd.Matrix = m
+	c := rgbmatrix.NewCanvas(m)
+  defer c.Close()
+
+	sd.Canvas = c
 
 	return &sd, nil
 }
@@ -104,18 +107,15 @@ func (sd *SignData) PrintArrivals(arrivals []feed.Arrival, name, direction strin
 }
 
 func(sd *SignData) WriteToMatrix() {
-  c := rgbmatrix.NewCanvas(sd.Matrix)
-  defer c.Close()
-
-  bounds := c.Bounds()
+  bounds := sd.Canvas.Bounds()
   for x := bounds.Min.X; x < bounds.Max.X; x++ {
     for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
 			if sd.Visual[y][x] > 0 {
-				c.Set(x, y, color.RGBA{255, 0, 0, 255})
+				sd.Canvas.Set(x, y, color.RGBA{255, 0, 0, 255})
 			}
 		}
   }
-	c.Render()
+	sd.Canvas.Render()
 }
 
 func (sd *SignData) addTitle(title [][]uint8) {
