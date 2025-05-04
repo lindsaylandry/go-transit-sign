@@ -13,6 +13,7 @@ import (
 
 type SignData struct {
 	Visual [32][64]uint8
+	Matrix rgbmatrix.Matrix
 	Canvas *rgbmatrix.Canvas
 }
 
@@ -35,10 +36,10 @@ func NewSignData() (*SignData, error) {
     return &sd, err
   }
 
-	c := rgbmatrix.NewCanvas(m)
-  defer c.Close()
+	sd.Matrix = m
 
-	sd.Canvas = c
+	c := rgbmatrix.NewCanvas(sd.Matrix)
+  defer c.Close()
 
 	return &sd, nil
 }
@@ -106,7 +107,7 @@ func (sd *SignData) PrintArrivals(arrivals []feed.Arrival, name, direction strin
 }
 
 func(sd *SignData) WriteToMatrix() {
-  bounds := sd.Canvas.Bounds()
+	bounds := sd.Canvas.Bounds()
   for x := bounds.Min.X; x < bounds.Max.X; x++ {
     for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
 			if sd.Visual[y][x] > 0 {
@@ -118,7 +119,7 @@ func(sd *SignData) WriteToMatrix() {
 }
 
 func(sd *SignData) WriteTestMatrix() {
-  bounds := sd.Canvas.Bounds()
+	bounds := sd.Canvas.Bounds()
   for x := bounds.Min.X; x < bounds.Max.X; x++ {
     for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
       sd.Canvas.Set(x, y, color.RGBA{255, 0, 0, 255})
