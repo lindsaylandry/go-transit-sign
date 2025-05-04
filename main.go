@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/tfk1410/go-rpi-rgb-led-matrix"
 
 	"github.com/lindsaylandry/go-transit-sign/src/busstops"
 	"github.com/lindsaylandry/go-transit-sign/src/decoder"
@@ -68,6 +69,14 @@ func CTA() error {
 		return err
 	}
 
+	sd, err := signdata.NewSignData()
+  if err != nil {
+    return err
+  }
+
+	sd.Canvas = rgbmatrix.NewCanvas(sd.Matrix)
+  defer sd.Canvas.Close()
+
 	for {
 		bf, err := feed.NewBusFeed(stp, key)
 		if err != nil {
@@ -82,10 +91,6 @@ func CTA() error {
 		// Print all arrivals
 		if led {
 			signdata.PrintArrivalsToStdout(arrivals, stp.Name, stp.Direction)
-			sd, err := signdata.NewSignData()
-			if err != nil {
-				return err
-			}
 			err = sd.PrintArrivals(arrivals, stp.Name, stp.Direction)
 			if err != nil {
 				return err
@@ -154,6 +159,10 @@ func TestMatrix() error {
 	if err != nil {
 		return err
 	}
+
+	sd.Canvas = rgbmatrix.NewCanvas(sd.Matrix)
+  defer sd.Canvas.Close()
+
 	sd.WriteTestMatrix()
 	return nil
 }

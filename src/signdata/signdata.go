@@ -38,9 +38,6 @@ func NewSignData() (*SignData, error) {
 
 	sd.Matrix = m
 
-	sd.Canvas = rgbmatrix.NewCanvas(sd.Matrix)
-  defer sd.Canvas.Close()
-
 	return &sd, nil
 }
 
