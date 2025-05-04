@@ -13,7 +13,7 @@ func WriteToMatrix() error {
 	config.Parallel = 1
 	config.ChainLength = 1
 	config.Brightness = 50
-	config.HardwareMapping = "regular"
+	config.HardwareMapping = "adafruit-hat"
 	config.ShowRefreshRate = false
 	config.InverseColors = false
 	config.DisableHardwarePulsing = false
