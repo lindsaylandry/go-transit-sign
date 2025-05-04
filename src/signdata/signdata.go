@@ -110,10 +110,12 @@ func(sd *SignData) WriteToMatrix() {
   bounds := c.Bounds()
   for x := bounds.Min.X; x < bounds.Max.X; x++ {
     for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
-      c.Set(x, y, color.RGBA{255, 0, 0, 255})
-      c.Render()
-    }
+			if sd.Visual[y][x] > 0 {
+				c.Set(x, y, color.RGBA{255, 0, 0, 255})
+			}
+		}
   }
+	c.Render()
 }
 
 func (sd *SignData) addTitle(title [][]uint8) {
