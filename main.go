@@ -64,52 +64,63 @@ func main() {
 }
 
 func CTA() error {
+	timezone := "America/Chicago"
 	stp, err := busstops.GetBusStop(stop)
 	if err != nil {
 		return err
 	}
-
-	sd, err := signdata.NewSignData()
-  if err != nil {
+	bf, err := feed.NewBusFeed(stp, key, timezone)
+	if err != nil {
     return err
   }
 
-	sd.Canvas = rgbmatrix.NewCanvas(sd.Matrix)
-  defer sd.Canvas.Close()
-
-	for {
-		bf, err := feed.NewBusFeed(stp, key)
+	if led {
+		sd, err := signdata.NewSignData()
 		if err != nil {
 			return err
 		}
 
-		arrivals, err := bf.GetArrivals()
-		if err != nil {
-			return err
-		}
+		sd.Canvas = rgbmatrix.NewCanvas(sd.Matrix)
+		defer sd.Canvas.Close()
+	
+		for {
+			arrivals, err := bf.GetArrivals()
+			if err != nil {
+				return err
+			}
 
-		// Print all arrivals
-		if led {
-			signdata.PrintArrivalsToStdout(arrivals, stp.Name, stp.Direction)
+			// Print all arrivals
 			err = sd.PrintArrivals(arrivals, stp.Name, stp.Direction)
 			if err != nil {
 				return err
 			}
-		} else {
+
+			if !cont {
+        break
+      }
+
+      time.Sleep(5 * time.Second)
+		}
+	} else {
+		for {
+      arrivals, err := bf.GetArrivals()
+      if err != nil {
+        return err
+      }
 			signdata.PrintArrivalsToStdout(arrivals, stp.Name, stp.Direction)
-		}
 
-		if !cont {
-			break
-		}
+			if !cont {
+				break
+			}
 
-		time.Sleep(5 * time.Second)
+			time.Sleep(5 * time.Second)
+		}
 	}
-
 	return nil
 }
 
 func NYCMTA() error {
+	//timezone := "America/New_York"
 	station, err := stations.GetStation(stop)
 	if err != nil {
 		return err
