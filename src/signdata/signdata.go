@@ -2,8 +2,10 @@ package signdata
 
 import (
 	"fmt"
-	"image"
+	"image/color"
 	"sort"
+
+	"github.com/tfk1410/go-rpi-rgb-led-matrix"
 
 	"github.com/lindsaylandry/go-transit-sign/src/feed"
 	"github.com/lindsaylandry/go-transit-sign/src/signdata/writer"
@@ -11,15 +13,31 @@ import (
 
 type SignData struct {
 	Visual [32][64]uint8
-	Image  image.Image
+	Matrix rgbmatrix.Matrix
 }
 
-func NewSignData() *SignData {
+func NewSignData() (*SignData, error) {
 	sd := SignData{}
 
-	sd.Image = image.NewRGBA(image.Rect(0, 0, 64, 32))
+	config := &rgbmatrix.DefaultConfig
+  config.Rows = len(sd.Visual)
+  config.Cols = len(sd.Visual[0])
+  config.Parallel = 1
+  config.ChainLength = 1
+  config.Brightness = 50
+  config.HardwareMapping = "adafruit-hat"
+  config.ShowRefreshRate = false
+  config.InverseColors = false
+  config.DisableHardwarePulsing = false
 
-	return &sd
+	m, err := rgbmatrix.NewRGBLedMatrix(config)
+  if err != nil {
+    return &sd, err
+  }
+
+	sd.Matrix = m
+
+	return &sd, nil
 }
 
 func PrintArrivalsToStdout(arrivals []feed.Arrival, name, direction string) {
@@ -80,8 +98,22 @@ func (sd *SignData) PrintArrivals(arrivals []feed.Arrival, name, direction strin
 	sd.addDirection(assembly)
 
 	sd.printMatrix()
+	sd.WriteToMatrix()
 
 	return nil
+}
+
+func(sd *SignData) WriteToMatrix() {
+  c := rgbmatrix.NewCanvas(sd.Matrix)
+  defer c.Close()
+
+  bounds := c.Bounds()
+  for x := bounds.Min.X; x < bounds.Max.X; x++ {
+    for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+      c.Set(x, y, color.RGBA{255, 0, 0, 255})
+      c.Render()
+    }
+  }
 }
 
 func (sd *SignData) addTitle(title [][]uint8) {

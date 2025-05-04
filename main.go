@@ -9,7 +9,6 @@ import (
 	"github.com/lindsaylandry/go-transit-sign/src/decoder"
 	"github.com/lindsaylandry/go-transit-sign/src/feed"
 	"github.com/lindsaylandry/go-transit-sign/src/signdata"
-	"github.com/lindsaylandry/go-transit-sign/src/signdata/ledMatrix"
 	"github.com/lindsaylandry/go-transit-sign/src/stations"
 )
 
@@ -82,7 +81,10 @@ func CTA() error {
 
 		// Print all arrivals
 		if led {
-			sd := signdata.NewSignData()
+			sd, err := signdata.NewSignData()
+			if err != nil {
+				return err
+			}
 			err = sd.PrintArrivals(arrivals, stp.Name, stp.Direction)
 			if err != nil {
 				return err
@@ -124,8 +126,11 @@ func NYCMTA() error {
 
 		// Print all arrivals
 		if led {
-			sd := signdata.NewSignData()
-			err := sd.PrintArrivals(arrivals, station.StopName, direction)
+			sd, err := signdata.NewSignData()
+			if err != nil {
+				return err
+			}
+			err = sd.PrintArrivals(arrivals, station.StopName, direction)
 			if err != nil {
 				return err
 			}
@@ -144,5 +149,10 @@ func NYCMTA() error {
 }
 
 func TestMatrix() error {
-	return ledMatrix.WriteToMatrix()
+	sd, err := signdata.NewSignData()
+	if err != nil {
+		return err
+	}
+	sd.WriteToMatrix()
+	return nil
 }
