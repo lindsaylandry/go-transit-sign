@@ -117,6 +117,16 @@ func(sd *SignData) WriteToMatrix() {
 	sd.Canvas.Render()
 }
 
+func(sd *SignData) WriteTestMatrix() {
+  bounds := sd.Canvas.Bounds()
+  for x := bounds.Min.X; x < bounds.Max.X; x++ {
+    for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+      sd.Canvas.Set(x, y, color.RGBA{255, 0, 0, 255})
+			sd.Canvas.Render()
+		}
+  }
+}
+
 func (sd *SignData) addTitle(title [][]uint8) {
 	for i, a := range title {
 		for j, b := range a {

@@ -154,6 +154,6 @@ func TestMatrix() error {
 	if err != nil {
 		return err
 	}
-	sd.WriteToMatrix()
+	sd.WriteTestMatrix()
 	return nil
 }
