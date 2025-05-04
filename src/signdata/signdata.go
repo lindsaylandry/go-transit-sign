@@ -100,7 +100,6 @@ func (sd *SignData) PrintArrivals(arrivals []feed.Arrival, name, direction strin
 	}
 	sd.addDirection(assembly)
 
-	sd.printMatrix()
 	sd.WriteToMatrix()
 
 	return nil

@@ -81,6 +81,7 @@ func CTA() error {
 
 		// Print all arrivals
 		if led {
+			signdata.PrintArrivalsToStdout(arrivals, stp.Name, stp.Direction)
 			sd, err := signdata.NewSignData()
 			if err != nil {
 				return err
