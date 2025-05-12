@@ -15,6 +15,16 @@ jobs:
           go-version: "1.21"
           cache: false
 
+      - name: Run go get
+        run: go get
+
+      # Install rpi-rgb-led-matrix
+      - name: Install rpi-rgb-led-matrix
+        run: |
+          git clone https://github.com/hzeller/rpi-rgb-led-matrix.git
+          cd rpi-rgb-led-matrix
+          make -j
+
       - name: Run go fmt
         run: test -z $(gofmt -l .)
 
@@ -22,9 +32,6 @@ jobs:
         uses: golangci/golangci-lint-action@v6
         with:
           args: --out-format=colored-line-number
-
-      - name: Run go get
-        run: go get
 
       - name: Run go vet
         run: go vet -all ./...
