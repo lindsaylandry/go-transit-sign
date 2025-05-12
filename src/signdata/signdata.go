@@ -98,12 +98,10 @@ func (sd *SignData) PrintArrivals(arrivals []feed.Arrival, name, direction strin
 	}
 	sd.addDirection(assembly)
 
-	sd.WriteToMatrix()
-
-	return nil
+	return sd.WriteToMatrix()
 }
 
-func (sd *SignData) WriteToMatrix() {
+func (sd *SignData) WriteToMatrix() error {
 	bounds := sd.Canvas.Bounds()
 	for x := bounds.Min.X; x < bounds.Max.X; x++ {
 		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
@@ -112,17 +110,21 @@ func (sd *SignData) WriteToMatrix() {
 			}
 		}
 	}
-	sd.Canvas.Render()
+	return sd.Canvas.Render()
 }
 
-func (sd *SignData) WriteTestMatrix() {
+func (sd *SignData) WriteTestMatrix() error {
 	bounds := sd.Canvas.Bounds()
 	for x := bounds.Min.X; x < bounds.Max.X; x++ {
 		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
 			sd.Canvas.Set(x, y, color.RGBA{255, 0, 0, 255})
-			sd.Canvas.Render()
+			err := sd.Canvas.Render()
+			if err != nil {
+				return err
+			}
 		}
 	}
+	return nil
 }
 
 func (sd *SignData) addTitle(title [][]uint8) {
