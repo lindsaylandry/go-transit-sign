@@ -69,52 +69,41 @@ func CTA() error {
 	if err != nil {
 		return err
 	}
+
+	// TODO: add cta trains
 	bf, err := feed.NewBusFeed(stp, key, timezone)
 	if err != nil {
     return err
   }
 
-	if led {
-		sd, err := signdata.NewSignData()
+	sd, err := signdata.NewSignData()
+  if err != nil {
+    return err
+  }
+	sd.Canvas = rgbmatrix.NewCanvas(sd.Matrix)
+  defer sd.Canvas.Close()
+
+	for {
+		arrivals, err := bf.GetArrivals()
 		if err != nil {
 			return err
 		}
 
-		sd.Canvas = rgbmatrix.NewCanvas(sd.Matrix)
-		defer sd.Canvas.Close()
-	
-		for {
-			arrivals, err := bf.GetArrivals()
-			if err != nil {
-				return err
-			}
-
+		if led {
 			// Print all arrivals
 			err = sd.PrintArrivals(arrivals, stp.Name, stp.Direction)
 			if err != nil {
 				return err
 			}
-
-			if !cont {
-        break
-      }
-
-      time.Sleep(5 * time.Second)
-		}
-	} else {
-		for {
-      arrivals, err := bf.GetArrivals()
-      if err != nil {
-        return err
-      }
+		} else {
 			signdata.PrintArrivalsToStdout(arrivals, stp.Name, stp.Direction)
-
-			if !cont {
-				break
-			}
-
-			time.Sleep(5 * time.Second)
 		}
+
+		if !cont {
+      break
+    }
+
+    time.Sleep(5 * time.Second)
 	}
 	return nil
 }
@@ -128,6 +117,13 @@ func NYCMTA() error {
 
 	// Get subway feeds from station trains
 	feeds := decoder.GetMtaTrainDecoders(station.DaytimeRoutes)
+	
+	sd, err := signdata.NewSignData()
+  if err != nil {
+    return err
+	}
+	sd.Canvas = rgbmatrix.NewCanvas(sd.Matrix)
+  defer sd.Canvas.Close()
 
 	for {
 		arrivals := []feed.Arrival{}
@@ -143,10 +139,6 @@ func NYCMTA() error {
 
 		// Print all arrivals
 		if led {
-			sd, err := signdata.NewSignData()
-			if err != nil {
-				return err
-			}
 			err = sd.PrintArrivals(arrivals, station.StopName, direction)
 			if err != nil {
 				return err
