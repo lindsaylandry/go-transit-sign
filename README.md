@@ -5,7 +5,27 @@ Currently will print to STDOUT for MTA train lines.
 
 Broadcasting to LED Matrix is a work in progress.
 
+## Dependencies
+
+This app depends on the following library:
+* https://github.com/tfK1410/go-rpi-rgb-led-matrix
+
+This library works only in Linux-based environments. If running on Mac or Windows,
+consider compiling this app in Docker or a Linux VM.
+
+Future commits to this app will include dockerfiles and docker-compose files for local development.
+
 ## How to Use
+
+### Building the App
+
+To build the app run:
+```bash
+go build
+```
+
+Running this the first time will result in errors. To fix these, follow these instructions from
+[tfK1410/go-rpi-rgb-led-matrix](https://github.com/tfK1410/go-rpi-rgb-led-matrix?tab=readme-ov-file#installation)
 
 ### Manual
 
