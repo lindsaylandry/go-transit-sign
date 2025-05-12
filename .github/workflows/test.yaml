@@ -21,6 +21,12 @@ jobs:
       # Install rpi-rgb-led-matrix
       - name: Install rpi-rgb-led-matrix
         run: |
+          cd $GOPATH/go/pkg/mod/github.com/tfk1410
+          path=$(ls)
+          cd ${path}
+          chmod 700 .
+          mkdir vendor
+          cd vendor
           git clone https://github.com/hzeller/rpi-rgb-led-matrix.git
           cd rpi-rgb-led-matrix
           make -j
