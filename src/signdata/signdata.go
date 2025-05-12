@@ -166,19 +166,6 @@ func (sd *SignData) addDirection(direction [][]uint8) {
 	}
 }
 
-func (sd *SignData) printMatrix() {
-	for _, a := range sd.Visual {
-		for _, b := range a {
-			if b == 0 {
-				fmt.Printf(" ")
-			} else {
-				fmt.Printf("8")
-			}
-		}
-		fmt.Printf("\n")
-	}
-}
-
 func getDirection(direction string) string {
 	var dir string
 	switch direction {

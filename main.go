@@ -166,6 +166,5 @@ func TestMatrix() error {
 	sd.Canvas = rgbmatrix.NewCanvas(sd.Matrix)
 	defer sd.Canvas.Close()
 
-	sd.WriteTestMatrix()
-	return nil
+	return sd.WriteTestMatrix()
 }
