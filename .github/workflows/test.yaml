@@ -12,7 +12,7 @@ jobs:
 
       - uses: actions/setup-go@v4
         with:
-          go-version: "1.21"
+          go-version: "1.24"
           cache: false
 
       - name: Run go fmt
@@ -25,7 +25,7 @@ jobs:
       - name: Install rpi-rgb-led-matrix
         run: |
           go build || echo '0'
-          cd $GOPATH/go/pkg/mod/github.com/tfk1410
+          cd ${GOPATH}/go/pkg/mod/github.com/tfk1410
           path=$(ls)
           cd ${path}
           chmod 700 .
