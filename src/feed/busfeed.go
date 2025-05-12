@@ -8,8 +8,8 @@ import (
 )
 
 type BusFeed struct {
-	BusStop busstops.CTABusStop
-	Key     string
+	BusStop  busstops.CTABusStop
+	Key      string
 	Timezone string
 
 	Feed decoder.CTABusFeedMessage

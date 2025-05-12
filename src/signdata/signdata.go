@@ -21,20 +21,20 @@ func NewSignData() (*SignData, error) {
 	sd := SignData{}
 
 	config := &rgbmatrix.DefaultConfig
-  config.Rows = len(sd.Visual)
-  config.Cols = len(sd.Visual[0])
-  config.Parallel = 1
-  config.ChainLength = 1
-  config.Brightness = 50
-  config.HardwareMapping = "adafruit-hat"
-  config.ShowRefreshRate = false
-  config.InverseColors = false
-  config.DisableHardwarePulsing = false
+	config.Rows = len(sd.Visual)
+	config.Cols = len(sd.Visual[0])
+	config.Parallel = 1
+	config.ChainLength = 1
+	config.Brightness = 50
+	config.HardwareMapping = "adafruit-hat"
+	config.ShowRefreshRate = false
+	config.InverseColors = false
+	config.DisableHardwarePulsing = false
 
 	m, err := rgbmatrix.NewRGBLedMatrix(config)
-  if err != nil {
-    return &sd, err
-  }
+	if err != nil {
+		return &sd, err
+	}
 
 	sd.Matrix = m
 
@@ -103,26 +103,26 @@ func (sd *SignData) PrintArrivals(arrivals []feed.Arrival, name, direction strin
 	return nil
 }
 
-func(sd *SignData) WriteToMatrix() {
+func (sd *SignData) WriteToMatrix() {
 	bounds := sd.Canvas.Bounds()
-  for x := bounds.Min.X; x < bounds.Max.X; x++ {
-    for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+	for x := bounds.Min.X; x < bounds.Max.X; x++ {
+		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
 			if sd.Visual[y][x] > 0 {
 				sd.Canvas.Set(x, y, color.RGBA{255, 0, 0, 255})
 			}
 		}
-  }
+	}
 	sd.Canvas.Render()
 }
 
-func(sd *SignData) WriteTestMatrix() {
+func (sd *SignData) WriteTestMatrix() {
 	bounds := sd.Canvas.Bounds()
-  for x := bounds.Min.X; x < bounds.Max.X; x++ {
-    for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
-      sd.Canvas.Set(x, y, color.RGBA{255, 0, 0, 255})
+	for x := bounds.Min.X; x < bounds.Max.X; x++ {
+		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+			sd.Canvas.Set(x, y, color.RGBA{255, 0, 0, 255})
 			sd.Canvas.Render()
 		}
-  }
+	}
 }
 
 func (sd *SignData) addTitle(title [][]uint8) {

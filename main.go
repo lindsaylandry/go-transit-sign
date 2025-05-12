@@ -39,11 +39,11 @@ func main() {
 	}
 
 	testMatrix := &cobra.Command{
-		Use: "testMatrix",
+		Use:   "testMatrix",
 		Short: "Test LED Matrix",
 		RunE: func(cmd *cobra.Command, args []string) error {
-      return TestMatrix()
-    }, 
+			return TestMatrix()
+		},
 	}
 
 	rootCmd.AddCommand(nycMtaCmd)
@@ -73,15 +73,15 @@ func CTA() error {
 	// TODO: add cta trains
 	bf, err := feed.NewBusFeed(stp, key, timezone)
 	if err != nil {
-    return err
-  }
+		return err
+	}
 
 	sd, err := signdata.NewSignData()
-  if err != nil {
-    return err
-  }
+	if err != nil {
+		return err
+	}
 	sd.Canvas = rgbmatrix.NewCanvas(sd.Matrix)
-  defer sd.Canvas.Close()
+	defer sd.Canvas.Close()
 
 	for {
 		arrivals, err := bf.GetArrivals()
@@ -100,10 +100,10 @@ func CTA() error {
 		}
 
 		if !cont {
-      break
-    }
+			break
+		}
 
-    time.Sleep(5 * time.Second)
+		time.Sleep(5 * time.Second)
 	}
 	return nil
 }
@@ -117,13 +117,13 @@ func NYCMTA() error {
 
 	// Get subway feeds from station trains
 	feeds := decoder.GetMtaTrainDecoders(station.DaytimeRoutes)
-	
+
 	sd, err := signdata.NewSignData()
-  if err != nil {
-    return err
+	if err != nil {
+		return err
 	}
 	sd.Canvas = rgbmatrix.NewCanvas(sd.Matrix)
-  defer sd.Canvas.Close()
+	defer sd.Canvas.Close()
 
 	for {
 		arrivals := []feed.Arrival{}
@@ -164,7 +164,7 @@ func TestMatrix() error {
 	}
 
 	sd.Canvas = rgbmatrix.NewCanvas(sd.Matrix)
-  defer sd.Canvas.Close()
+	defer sd.Canvas.Close()
 
 	sd.WriteTestMatrix()
 	return nil
