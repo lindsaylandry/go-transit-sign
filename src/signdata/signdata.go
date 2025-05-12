@@ -2,8 +2,10 @@ package signdata
 
 import (
 	"fmt"
-	"image"
+	"image/color"
 	"sort"
+
+	"github.com/tfk1410/go-rpi-rgb-led-matrix"
 
 	"github.com/lindsaylandry/go-transit-sign/src/feed"
 	"github.com/lindsaylandry/go-transit-sign/src/signdata/writer"
@@ -11,15 +13,32 @@ import (
 
 type SignData struct {
 	Visual [32][64]uint8
-	Image  image.Image
+	Matrix rgbmatrix.Matrix
+	Canvas *rgbmatrix.Canvas
 }
 
-func NewSignData() *SignData {
+func NewSignData() (*SignData, error) {
 	sd := SignData{}
 
-	sd.Image = image.NewRGBA(image.Rect(0, 0, 64, 32))
+	config := &rgbmatrix.DefaultConfig
+	config.Rows = len(sd.Visual)
+	config.Cols = len(sd.Visual[0])
+	config.Parallel = 1
+	config.ChainLength = 1
+	config.Brightness = 50
+	config.HardwareMapping = "adafruit-hat"
+	config.ShowRefreshRate = false
+	config.InverseColors = false
+	config.DisableHardwarePulsing = false
 
-	return &sd
+	m, err := rgbmatrix.NewRGBLedMatrix(config)
+	if err != nil {
+		return &sd, err
+	}
+
+	sd.Matrix = m
+
+	return &sd, nil
 }
 
 func PrintArrivalsToStdout(arrivals []feed.Arrival, name, direction string) {
@@ -79,8 +98,32 @@ func (sd *SignData) PrintArrivals(arrivals []feed.Arrival, name, direction strin
 	}
 	sd.addDirection(assembly)
 
-	sd.printMatrix()
+	return sd.WriteToMatrix()
+}
 
+func (sd *SignData) WriteToMatrix() error {
+	bounds := sd.Canvas.Bounds()
+	for x := bounds.Min.X; x < bounds.Max.X; x++ {
+		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+			if sd.Visual[y][x] > 0 {
+				sd.Canvas.Set(x, y, color.RGBA{255, 0, 0, 255})
+			}
+		}
+	}
+	return sd.Canvas.Render()
+}
+
+func (sd *SignData) WriteTestMatrix() error {
+	bounds := sd.Canvas.Bounds()
+	for x := bounds.Min.X; x < bounds.Max.X; x++ {
+		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+			sd.Canvas.Set(x, y, color.RGBA{255, 0, 0, 255})
+			err := sd.Canvas.Render()
+			if err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }
 
@@ -120,19 +163,6 @@ func (sd *SignData) addDirection(direction [][]uint8) {
 				sd.Visual[i+start][j] = b
 			}
 		}
-	}
-}
-
-func (sd *SignData) printMatrix() {
-	for _, a := range sd.Visual {
-		for _, b := range a {
-			if b == 0 {
-				fmt.Printf(" ")
-			} else {
-				fmt.Printf("8")
-			}
-		}
-		fmt.Printf("\n")
 	}
 }
 

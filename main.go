@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/tfk1410/go-rpi-rgb-led-matrix"
 
 	"github.com/lindsaylandry/go-transit-sign/src/busstops"
 	"github.com/lindsaylandry/go-transit-sign/src/decoder"
@@ -37,8 +38,17 @@ func main() {
 		},
 	}
 
+	testMatrix := &cobra.Command{
+		Use:   "testMatrix",
+		Short: "Test LED Matrix",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return TestMatrix()
+		},
+	}
+
 	rootCmd.AddCommand(nycMtaCmd)
 	rootCmd.AddCommand(ctaCmd)
+	rootCmd.AddCommand(testMatrix)
 
 	rootCmd.PersistentFlags().StringVarP(&stop, "stop", "s", "D30", "stop to parse")
 	rootCmd.PersistentFlags().StringVarP(&key, "key", "k", "foobar", "API access key")
@@ -54,25 +64,33 @@ func main() {
 }
 
 func CTA() error {
+	timezone := "America/Chicago"
 	stp, err := busstops.GetBusStop(stop)
 	if err != nil {
 		return err
 	}
 
-	for {
-		bf, err := feed.NewBusFeed(stp, key)
-		if err != nil {
-			return err
-		}
+	// TODO: add cta trains
+	bf, err := feed.NewBusFeed(stp, key, timezone)
+	if err != nil {
+		return err
+	}
 
+	sd, err := signdata.NewSignData()
+	if err != nil {
+		return err
+	}
+	sd.Canvas = rgbmatrix.NewCanvas(sd.Matrix)
+	defer sd.Canvas.Close()
+
+	for {
 		arrivals, err := bf.GetArrivals()
 		if err != nil {
 			return err
 		}
 
-		// Print all arrivals
 		if led {
-			sd := signdata.NewSignData()
+			// Print all arrivals
 			err = sd.PrintArrivals(arrivals, stp.Name, stp.Direction)
 			if err != nil {
 				return err
@@ -87,11 +105,11 @@ func CTA() error {
 
 		time.Sleep(5 * time.Second)
 	}
-
 	return nil
 }
 
 func NYCMTA() error {
+	//timezone := "America/New_York"
 	station, err := stations.GetStation(stop)
 	if err != nil {
 		return err
@@ -99,6 +117,13 @@ func NYCMTA() error {
 
 	// Get subway feeds from station trains
 	feeds := decoder.GetMtaTrainDecoders(station.DaytimeRoutes)
+
+	sd, err := signdata.NewSignData()
+	if err != nil {
+		return err
+	}
+	sd.Canvas = rgbmatrix.NewCanvas(sd.Matrix)
+	defer sd.Canvas.Close()
 
 	for {
 		arrivals := []feed.Arrival{}
@@ -114,8 +139,7 @@ func NYCMTA() error {
 
 		// Print all arrivals
 		if led {
-			sd := signdata.NewSignData()
-			err := sd.PrintArrivals(arrivals, station.StopName, direction)
+			err = sd.PrintArrivals(arrivals, station.StopName, direction)
 			if err != nil {
 				return err
 			}
@@ -131,4 +155,16 @@ func NYCMTA() error {
 	}
 
 	return nil
+}
+
+func TestMatrix() error {
+	sd, err := signdata.NewSignData()
+	if err != nil {
+		return err
+	}
+
+	sd.Canvas = rgbmatrix.NewCanvas(sd.Matrix)
+	defer sd.Canvas.Close()
+
+	return sd.WriteTestMatrix()
 }
