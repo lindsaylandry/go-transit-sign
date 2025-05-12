@@ -24,7 +24,7 @@ jobs:
       # Install rpi-rgb-led-matrix
       - name: Install rpi-rgb-led-matrix
         run: |
-          cd $GOPATH/go/pkg/mod/github.com
+          cd $GOPATH/go
           ls
           cd $GOPATH/go/pkg/mod/github.com/tfk1410
           path=$(ls)
