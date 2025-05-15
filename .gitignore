@@ -23,3 +23,4 @@ go.work
 # extras
 *.swp
 go-transit-sign
+configs/secrets.env
