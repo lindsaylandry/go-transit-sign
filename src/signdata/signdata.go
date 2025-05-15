@@ -71,7 +71,7 @@ func (sd *SignData) PrintArrivals(arrivals []feed.Arrival, name, direction strin
 	sd.addTitle(assembly)
 
 	if len(arrivals) == 0 {
-		fmt.Println("No trains arriving at this station today")
+		fmt.Println("None")
 		return nil
 	}
 

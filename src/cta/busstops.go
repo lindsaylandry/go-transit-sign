@@ -1,4 +1,4 @@
-package busstops
+package cta
 
 import (
 	"bytes"
@@ -11,8 +11,24 @@ import (
 	"golang.org/x/net/html"
 )
 
-func GetBusStop(stopID string) (CTABusStop, error) {
-	stop := CTABusStop{}
+type KMLDescription struct {
+  Document struct {
+    Placemarks []struct {
+      Description []byte `xml:"description"`
+    } `xml:"Placemark"`
+  } `xml:"Document>Folder"`
+}
+
+type BusStop struct {
+  Name      string
+  StopID    string
+  PositionX float64
+  PositionY float64
+  Direction string
+}
+
+func GetBusStop(stopID string) (BusStop, error) {
+	stop := BusStop{}
 	stops, err := readBusStops("data/cta-bus-stations.kml")
 	if err != nil {
 		return stop, err
@@ -27,8 +43,8 @@ func GetBusStop(stopID string) (CTABusStop, error) {
 	return stop, fmt.Errorf("Could not find bus stop %s", stopID)
 }
 
-func readBusStops(filepath string) ([]CTABusStop, error) {
-	busStops := []CTABusStop{}
+func readBusStops(filepath string) ([]BusStop, error) {
+	busStops := []BusStop{}
 	descriptions := KMLDescription{}
 	data, err := os.ReadFile(filepath)
 	if err != nil {
@@ -40,7 +56,7 @@ func readBusStops(filepath string) ([]CTABusStop, error) {
 	}
 
 	for _, d := range descriptions.Document.Placemarks {
-		bus := CTABusStop{}
+		bus := BusStop{}
 
 		z := html.NewTokenizer(bytes.NewReader(d.Description))
 		content := []string{}

@@ -3,19 +3,19 @@ package feed
 import (
 	"time"
 
-	"github.com/lindsaylandry/go-transit-sign/src/busstops"
+	"github.com/lindsaylandry/go-transit-sign/src/cta"
 	"github.com/lindsaylandry/go-transit-sign/src/decoder"
 )
 
 type BusFeed struct {
-	BusStop  busstops.CTABusStop
+	BusStop  cta.BusStop
 	Key      string
 	Timezone string
 
 	Feed decoder.CTABusFeedMessage
 }
 
-func NewBusFeed(busstop busstops.CTABusStop, accessKey, timezone string) (*BusFeed, error) {
+func NewBusFeed(busstop cta.BusStop, accessKey, timezone string) (*BusFeed, error) {
 	b := BusFeed{}
 
 	b.Key = accessKey

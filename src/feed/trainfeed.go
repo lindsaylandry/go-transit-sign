@@ -5,11 +5,11 @@ import (
 	"time"
 
 	"github.com/lindsaylandry/go-transit-sign/src/decoder"
-	"github.com/lindsaylandry/go-transit-sign/src/stations"
+	"github.com/lindsaylandry/go-transit-sign/src/nycmta"
 )
 
 type TrainFeed struct {
-	Station   stations.MtaStation
+	Station   nycmta.Station
 	Key       string
 	Direction string
 
@@ -21,7 +21,7 @@ type Arrival struct {
 	Secs  int64
 }
 
-func NewTrainFeed(station stations.MtaStation, accessKey, direction, url string) (*TrainFeed, error) {
+func NewTrainFeed(station nycmta.Station, accessKey, direction, url string) (*TrainFeed, error) {
 	t := TrainFeed{}
 
 	t.Key = accessKey

@@ -7,12 +7,12 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tfk1410/go-rpi-rgb-led-matrix"
 
-	"github.com/lindsaylandry/go-transit-sign/src/busstops"
+	"github.com/lindsaylandry/go-transit-sign/src/cta"
 	"github.com/lindsaylandry/go-transit-sign/src/config"
 	"github.com/lindsaylandry/go-transit-sign/src/decoder"
 	"github.com/lindsaylandry/go-transit-sign/src/feed"
 	"github.com/lindsaylandry/go-transit-sign/src/signdata"
-	"github.com/lindsaylandry/go-transit-sign/src/stations"
+	"github.com/lindsaylandry/go-transit-sign/src/nycmta"
 )
 
 var stop, key, direction string
@@ -73,7 +73,7 @@ func main() {
 
 func CTA() error {
 	timezone := "America/Chicago"
-	stp, err := busstops.GetBusStop(stop)
+	stp, err := cta.GetBusStop(stop)
 	if err != nil {
 		return err
 	}
@@ -114,7 +114,7 @@ func CTA() error {
 
 func NYCMTA() error {
 	//timezone := "America/New_York"
-	station, err := stations.GetStation(stop)
+	station, err := nycmta.GetStation(stop)
 	if err != nil {
 		return err
 	}
