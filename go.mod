@@ -11,6 +11,7 @@ require (
 	github.com/tfk1410/go-rpi-rgb-led-matrix v0.0.0-20210404121211-ed43f29cbccb
 	golang.org/x/net v0.33.0
 	google.golang.org/protobuf v1.31.0
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (

@@ -1,12 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/tfk1410/go-rpi-rgb-led-matrix"
 
 	"github.com/lindsaylandry/go-transit-sign/src/busstops"
+	"github.com/lindsaylandry/go-transit-sign/src/config"
 	"github.com/lindsaylandry/go-transit-sign/src/decoder"
 	"github.com/lindsaylandry/go-transit-sign/src/feed"
 	"github.com/lindsaylandry/go-transit-sign/src/signdata"
@@ -14,7 +16,8 @@ import (
 )
 
 var stop, key, direction string
-var cont, train, led bool
+var train, led bool
+var conf config.Config
 
 func main() {
 	rootCmd := &cobra.Command{
@@ -51,13 +54,18 @@ func main() {
 	rootCmd.AddCommand(testMatrix)
 
 	rootCmd.PersistentFlags().StringVarP(&stop, "stop", "s", "D30", "stop to parse")
-	rootCmd.PersistentFlags().StringVarP(&key, "key", "k", "foobar", "API access key")
-	rootCmd.PersistentFlags().BoolVarP(&cont, "continue", "c", true, "continue printing arrivals")
+	//rootCmd.PersistentFlags().StringVarP(&key, "key", "k", "foobar", "API access key")
 	rootCmd.PersistentFlags().BoolVarP(&train, "train", "t", true, "train or bus (train=true, bus=false)")
 	rootCmd.PersistentFlags().StringVarP(&direction, "direction", "d", "N", "direction (trains only)")
 	rootCmd.PersistentFlags().BoolVarP(&led, "led", "l", false, "output to led matrix")
 
-	err := rootCmd.Execute()
+	conf, err := config.NewConfig()
+  if err != nil {
+    panic(err)
+  }
+	fmt.Println(conf)
+
+	err = rootCmd.Execute()
 	if err != nil {
 		panic(err)
 	}
@@ -71,7 +79,7 @@ func CTA() error {
 	}
 
 	// TODO: add cta trains
-	bf, err := feed.NewBusFeed(stp, key, timezone)
+	bf, err := feed.NewBusFeed(stp, conf.CTA.Bus.APIKey, timezone)
 	if err != nil {
 		return err
 	}
@@ -99,10 +107,6 @@ func CTA() error {
 			signdata.PrintArrivalsToStdout(arrivals, stp.Name, stp.Direction)
 		}
 
-		if !cont {
-			break
-		}
-
 		time.Sleep(5 * time.Second)
 	}
 	return nil
@@ -128,7 +132,8 @@ func NYCMTA() error {
 	for {
 		arrivals := []feed.Arrival{}
 		for _, f := range *feeds {
-			t, err := feed.NewTrainFeed(station, key, direction, f.URL)
+			// TODO: get buses
+			t, err := feed.NewTrainFeed(station, conf.NYCMTA.APIKey, direction, f.URL)
 			if err != nil {
 				return err
 			}
@@ -145,10 +150,6 @@ func NYCMTA() error {
 			}
 		} else {
 			signdata.PrintArrivalsToStdout(arrivals, station.StopName, direction)
-		}
-
-		if !cont {
-			break
 		}
 
 		time.Sleep(5 * time.Second)

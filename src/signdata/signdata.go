@@ -145,7 +145,7 @@ func (sd *SignData) addArrival(arrival [][]uint8, index int) {
 	for i, a := range arrival {
 		for j, b := range a {
 			// Truncate for now
-			if len(sd.Visual[0]) > j && len(sd.Visual[0]) > i+start {
+			if len(sd.Visual[0]) > j && len(sd.Visual) > i+start+1 {
 				sd.Visual[i+start][j] = b
 			}
 		}
@@ -159,7 +159,7 @@ func (sd *SignData) addDirection(direction [][]uint8) {
 	for i, a := range direction {
 		for j, b := range a {
 			// Truncate for now
-			if len(sd.Visual[0]) > j && len(sd.Visual) > i+start {
+			if len(sd.Visual[0]) > j && len(sd.Visual) > i+start+1 {
 				sd.Visual[i+start][j] = b
 			}
 		}
