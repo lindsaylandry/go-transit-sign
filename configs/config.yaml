@@ -1,0 +1,13 @@
+cta:
+  train:
+    stops: '1130'
+    api_key: 82cb87a34b0e4c2eb94bf8badb81d8cb
+  bus:
+    stops: '5908'
+    api_key: ChUJ4eUmbtqzLbHDuQJrCm5br
+nyc_mta:
+  api_key: 0860f85c98b2e0a7a9f2c00b6e1c1b49
+  bus:
+    stops: ''
+  train:
+    stops: D30

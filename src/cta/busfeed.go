@@ -1,41 +1,40 @@
-package feed
+package cta
 
 import (
 	"time"
 
-	"github.com/lindsaylandry/go-transit-sign/src/cta"
-	"github.com/lindsaylandry/go-transit-sign/src/decoder"
+	"github.com/lindsaylandry/go-transit-sign/src/signdata"
 )
 
 type BusFeed struct {
-	BusStop  cta.BusStop
+	BusStop  BusStop
 	Key      string
 	Timezone string
 
-	Feed decoder.CTABusFeedMessage
+	Feed CTABusFeedMessage
 }
 
-func NewBusFeed(busstop cta.BusStop, accessKey, timezone string) (*BusFeed, error) {
+func NewBusFeed(busstop BusStop, accessKey, timezone string) (*BusFeed, error) {
 	b := BusFeed{}
 
 	b.Key = accessKey
 	b.Timezone = timezone
 	b.BusStop = busstop
-	feed, err := decoder.DecodeCTA(accessKey, busstop.StopID, decoder.CTABusFeedURL)
+	feed, err := DecodeCTA(accessKey, busstop.StopID, CTABusFeedURL)
 	b.Feed = feed
 
 	return &b, err
 }
 
-func (b *BusFeed) GetArrivals() ([]Arrival, error) {
-	arrivals := []Arrival{}
+func (b *BusFeed) GetArrivals() ([]signdata.Arrival, error) {
+	arrivals := []signdata.Arrival{}
 	loc, err := time.LoadLocation(b.Timezone)
 	if err != nil {
 		return arrivals, err
 	}
 
 	for _, f := range b.Feed.BusTimeResponse.Prd {
-		arr := Arrival{}
+		arr := signdata.Arrival{}
 		arr.Label = f.Name
 
 		// find time

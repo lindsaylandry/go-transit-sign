@@ -1,8 +1,13 @@
-package decoder
+package nycmta
 
 import (
 	"strings"
 )
+
+type TrainDecoder struct {
+  URL    string
+  Trains []string
+}
 
 func GetAllMtaTrainDecoders() *[]TrainDecoder {
 	f := []TrainDecoder{

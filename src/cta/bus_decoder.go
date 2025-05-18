@@ -1,4 +1,8 @@
-package decoder
+package cta
+
+type BusDecoder struct {
+  URL string
+}
 
 type CTABusFeedMessage struct {
 	BusTimeResponse struct {

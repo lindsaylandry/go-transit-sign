@@ -9,8 +9,6 @@ import (
 
 	"github.com/lindsaylandry/go-transit-sign/src/cta"
 	"github.com/lindsaylandry/go-transit-sign/src/config"
-	"github.com/lindsaylandry/go-transit-sign/src/decoder"
-	"github.com/lindsaylandry/go-transit-sign/src/feed"
 	"github.com/lindsaylandry/go-transit-sign/src/signdata"
 	"github.com/lindsaylandry/go-transit-sign/src/nycmta"
 )
@@ -79,7 +77,7 @@ func CTA() error {
 	}
 
 	// TODO: add cta trains
-	bf, err := feed.NewBusFeed(stp, conf.CTA.Bus.APIKey, timezone)
+	bf, err := cta.NewBusFeed(stp, conf.CTA.Bus.APIKey, timezone)
 	if err != nil {
 		return err
 	}
@@ -120,7 +118,7 @@ func NYCMTA() error {
 	}
 
 	// Get subway feeds from station trains
-	feeds := decoder.GetMtaTrainDecoders(station.DaytimeRoutes)
+	feeds := nycmta.GetMtaTrainDecoders(station.DaytimeRoutes)
 
 	sd, err := signdata.NewSignData()
 	if err != nil {
@@ -130,10 +128,10 @@ func NYCMTA() error {
 	defer sd.Canvas.Close()
 
 	for {
-		arrivals := []feed.Arrival{}
+		arrivals := []signdata.Arrival{}
 		for _, f := range *feeds {
 			// TODO: get buses
-			t, err := feed.NewTrainFeed(station, conf.NYCMTA.APIKey, direction, f.URL)
+			t, err := nycmta.NewTrainFeed(station, conf.NYCMTA.APIKey, direction, f.URL)
 			if err != nil {
 				return err
 			}
