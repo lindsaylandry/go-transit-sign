@@ -6,24 +6,28 @@ import (
 )
 
 type Config struct {
+	Emulate bool `yaml:"emulate"`
 	CTA CTA `yaml:"cta"`
-	NYCMTA NYCMTA `yaml:"nyc_mta"`
+	NYCMTA NYCMTA `yaml:"nycmta"`
 }
 
 type NYCMTA struct {
 	APIKey string `yaml:"api_key"`
+	Bus MTAInfo `yaml:"bus"`
+	Train MTAInfo `yaml:"train"`
 }
 
 type CTA struct {
-	Bus Bus `yaml:"bus"`
-	Train Train `yaml:"train"`
+	Bus CTAInfo `yaml:"bus"`
+	Train CTAInfo `yaml:"train"`
 }
 
-type Bus struct {
-	APIKey string `yaml:"api_key"`
+type MTAInfo struct {
+	StopIDs []string `yaml:"stop_ids"`
 }
 
-type Train struct {
+type CTAInfo struct {
+	StopIDs []int `yaml:"stop_ids"`
 	APIKey string `yaml:"api_key"`
 }
 

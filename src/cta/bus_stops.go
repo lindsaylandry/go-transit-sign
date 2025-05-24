@@ -12,22 +12,22 @@ import (
 )
 
 type KMLDescription struct {
-  Document struct {
-    Placemarks []struct {
-      Description []byte `xml:"description"`
-    } `xml:"Placemark"`
-  } `xml:"Document>Folder"`
+	Document struct {
+		Placemarks []struct {
+			Description []byte `xml:"description"`
+		} `xml:"Placemark"`
+	} `xml:"Document>Folder"`
 }
 
 type BusStop struct {
-  Name      string
-  StopID    string
-  PositionX float64
-  PositionY float64
-  Direction string
+	Name      string
+	StopID    int
+	PositionX float64
+	PositionY float64
+	Direction string
 }
 
-func GetBusStop(stopID string) (BusStop, error) {
+func GetBusStop(stopID int) (BusStop, error) {
 	stop := BusStop{}
 	stops, err := readBusStops("data/cta-bus-stations.kml")
 	if err != nil {
@@ -40,7 +40,7 @@ func GetBusStop(stopID string) (BusStop, error) {
 		}
 	}
 
-	return stop, fmt.Errorf("Could not find bus stop %s", stopID)
+	return stop, fmt.Errorf("Could not find bus stop %d", stopID)
 }
 
 func readBusStops(filepath string) ([]BusStop, error) {
@@ -81,7 +81,7 @@ func readBusStops(filepath string) ([]BusStop, error) {
 		for i, v := range content {
 			switch v {
 			case "SYSTEMSTOP":
-				bus.StopID = content[i+1]
+				bus.StopID, err = strconv.Atoi(content[i+1])
 			case "PUBLIC_NAME":
 				bus.Name = content[i+1]
 			case "DIR":

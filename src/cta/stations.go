@@ -1,101 +1,57 @@
 package cta
 
 import (
-	"bytes"
-	"encoding/xml"
 	"fmt"
+	"github.com/gocarina/gocsv"
 	"os"
-	"strconv"
-	"strings"
-
-	"golang.org/x/net/html"
 )
 
 type Station struct {
-  Name      string
-	RailLine  string
-  StationID string
-  PositionX float64
-  PositionY float64
-  Direction string
+	StopID          int    `csv:"STOP_ID"`
+	DirectionID     string `csv:"DIRECTION_ID"`
+	StopName        string `csv:"STOP_NAME"`
+	StationName     string `csv:"STATION_NAME"`
+	StationDescName string `csv:"STATION_DESCRIPTIVE_NAME"`
+	MapID           int    `csv:"MAP_ID"`
+	ADA             bool   `csv:"ADA"`
+	Red             bool   `csv:"RED"`
+	Blue            bool   `csv:"BLUE"`
+	Green           bool   `csv:"G"`
+	Brown           bool   `csv:"BRN"`
+	Purple          bool   `csv:"P"`
+	Pexp            bool   `csv:"Pexp"`
+	Yellow          bool   `csv:"Y"`
+	Pink            bool   `csv:"Pnk"`
+	Orange          bool   `csv:"O"`
+	Location        string `csv:"Location"`
 }
 
-func GetStation(stationID string) (Station, error) {
+func GetStation(mapID int) (Station, error) {
 	station := Station{}
-	stations, err := readStations("data/cta-rail-stations.kml")
+	stations, err := readStations("data/cta-rail-stations.csv")
 	if err != nil {
 		return station, err
 	}
 
+	// Find station, return error if not found
 	for _, s := range stations {
-		if s.StationID == stationID {
+		if s.MapID == mapID {
 			return s, nil
 		}
 	}
 
-	return station, fmt.Errorf("Could not find station %s", stationID)
+	return station, fmt.Errorf("Could not find station %s", mapID)
 }
 
 func readStations(filepath string) ([]Station, error) {
 	stations := []Station{}
-	descriptions := KMLDescription{}
-	data, err := os.ReadFile(filepath)
+	f, err := os.Open(filepath)
 	if err != nil {
 		return stations, err
 	}
+	defer f.Close()
 
-	if err = xml.Unmarshal(data, &descriptions); err != nil {
-		return stations, err
-	}
-
-	for _, d := range descriptions.Document.Placemarks {
-		rail := Station{}
-
-		z := html.NewTokenizer(bytes.NewReader(d.Description))
-		content := []string{}
-
-		for z.Token().Data != "html" {
-			tt := z.Next()
-			if tt == html.StartTagToken {
-				t := z.Token()
-				if t.Data == "td" {
-					inner := z.Next()
-					if inner == html.TextToken {
-						text := (string)(z.Text())
-						if text != "" {
-							t := strings.TrimSpace(text)
-							content = append(content, t)
-						}
-					}
-				}
-			}
-		}
-
-		for i, v := range content {
-			switch v {
-			case "Station ID":
-				rail.StationID = content[i+1]
-			case "Station Name":
-				rail.Name = content[i+1]
-			case "Rail Line":
-				rail.RailLine = content[i+1]
-			case "DIR":
-				rail.Direction = content[i+1]
-			case "POINT_X":
-				rail.PositionX, err = strconv.ParseFloat(content[i+1], 64)
-			case "POINT_Y":
-				rail.PositionY, err = strconv.ParseFloat(content[i+1], 64)
-			default:
-				continue
-			}
-
-			if err != nil {
-				return stations, err
-			}
-		}
-
-		stations = append(stations, rail)
-	}
+	err = gocsv.UnmarshalFile(f, &stations)
 
 	return stations, err
 }

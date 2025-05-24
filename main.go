@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"os"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -13,8 +13,8 @@ import (
 	"github.com/lindsaylandry/go-transit-sign/src/nycmta"
 )
 
-var stop, key, direction string
-var train, led bool
+var direction string
+var led bool
 var conf config.Config
 
 func main() {
@@ -51,17 +51,18 @@ func main() {
 	rootCmd.AddCommand(ctaCmd)
 	rootCmd.AddCommand(testMatrix)
 
-	rootCmd.PersistentFlags().StringVarP(&stop, "stop", "s", "D30", "stop to parse")
-	//rootCmd.PersistentFlags().StringVarP(&key, "key", "k", "foobar", "API access key")
-	rootCmd.PersistentFlags().BoolVarP(&train, "train", "t", true, "train or bus (train=true, bus=false)")
 	rootCmd.PersistentFlags().StringVarP(&direction, "direction", "d", "N", "direction (trains only)")
 	rootCmd.PersistentFlags().BoolVarP(&led, "led", "l", false, "output to led matrix")
 
-	conf, err := config.NewConfig()
+	config, err := config.NewConfig()
   if err != nil {
     panic(err)
   }
-	fmt.Println(conf)
+	conf = *config
+
+	if conf.Emulate {
+		os.Setenv("MATRIX_EMULATOR", "1")
+	}
 
 	err = rootCmd.Execute()
 	if err != nil {
@@ -71,7 +72,8 @@ func main() {
 
 func CTA() error {
 	timezone := "America/Chicago"
-	stp, err := cta.GetBusStop(stop)
+	// TODO: loop through all stops
+	stp, err := cta.GetBusStop(conf.CTA.Bus.StopIDs[0])
 	if err != nil {
 		return err
 	}
@@ -112,7 +114,7 @@ func CTA() error {
 
 func NYCMTA() error {
 	//timezone := "America/New_York"
-	station, err := nycmta.GetStation(stop)
+	station, err := nycmta.GetStation(conf.NYCMTA.Train.StopIDs[0])
 	if err != nil {
 		return err
 	}
