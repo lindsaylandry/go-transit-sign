@@ -7,10 +7,10 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tfk1410/go-rpi-rgb-led-matrix"
 
-	"github.com/lindsaylandry/go-transit-sign/src/cta"
 	"github.com/lindsaylandry/go-transit-sign/src/config"
-	"github.com/lindsaylandry/go-transit-sign/src/signdata"
+	"github.com/lindsaylandry/go-transit-sign/src/cta"
 	"github.com/lindsaylandry/go-transit-sign/src/nycmta"
+	"github.com/lindsaylandry/go-transit-sign/src/signdata"
 )
 
 var direction string
@@ -55,9 +55,9 @@ func main() {
 	rootCmd.PersistentFlags().BoolVarP(&led, "led", "l", false, "output to led matrix")
 
 	config, err := config.NewConfig()
-  if err != nil {
-    panic(err)
-  }
+	if err != nil {
+		panic(err)
+	}
 	conf = *config
 
 	if conf.Emulate {

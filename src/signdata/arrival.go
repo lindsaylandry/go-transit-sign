@@ -1,6 +1,6 @@
 package signdata
 
 type Arrival struct {
-  Label string
-  Secs  int64
+	Label string
+	Secs  int64
 }

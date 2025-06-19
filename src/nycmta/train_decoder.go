@@ -5,8 +5,8 @@ import (
 )
 
 type TrainDecoder struct {
-  URL    string
-  Trains []string
+	URL    string
+	Trains []string
 }
 
 func GetAllMtaTrainDecoders() *[]TrainDecoder {
