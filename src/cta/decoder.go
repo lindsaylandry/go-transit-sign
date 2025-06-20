@@ -13,9 +13,9 @@ type BusFeedMessage struct {
 	BusTimeResponse struct {
 		Error string `json:"error"`
 		Prd   []struct {
-			RouteDir      string `json:"rtdir"`
-			Name          string `json:"rt"`
-			PredictedTime string `json:"prdtm"`
+			RouteDir           string `json:"rtdir"`
+			Name               string `json:"rt"`
+			PredictedCountdown string `json:"prdctdn"`
 		} `json:"prd"`
 	} `json:"bustime-response"`
 }
@@ -56,7 +56,6 @@ func DecodeBus(k string, stopID int, url string) (BusFeedMessage, error) {
 	defer resp.Body.Close()
 
 	// read response code
-	// TODO: more error checks
 	if resp.StatusCode >= 400 {
 		return bf, errors.New(http.StatusText(resp.StatusCode))
 	}

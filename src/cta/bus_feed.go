@@ -1,7 +1,7 @@
 package cta
 
 import (
-	"time"
+	"strconv"
 
 	"github.com/lindsaylandry/go-transit-sign/src/signdata"
 )
@@ -26,15 +26,13 @@ func NewBusFeed(busstop BusStop, accessKey, timezone string) *BusFeed {
 
 func (b *BusFeed) GetArrivals() ([]signdata.Arrival, error) {
 	arrivals := []signdata.Arrival{}
-	loc, err := time.LoadLocation(b.Timezone)
-	if err != nil {
-		return arrivals, err
-	}
 
 	feed, err := DecodeBus(b.Key, b.BusStop.StopID, BusFeedURL)
 	if err != nil {
 		return arrivals, err
 	}
+
+	// TODO: read feed errors
 
 	b.Feed = feed
 
@@ -42,15 +40,11 @@ func (b *BusFeed) GetArrivals() ([]signdata.Arrival, error) {
 		arr := signdata.Arrival{}
 		arr.Label = f.Name
 
-		// find time
-		t, err := time.ParseInLocation("20060102 15:04", f.PredictedTime, loc)
+		mins, err := strconv.Atoi(f.PredictedCountdown)
 		if err != nil {
 			return arrivals, err
 		}
-
-		now := time.Now()
-		secs := t.Unix() - now.Unix()
-		arr.Secs = secs
+		arr.Secs = int64(mins * 60)
 
 		arrivals = append(arrivals, arr)
 	}
