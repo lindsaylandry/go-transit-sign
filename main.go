@@ -73,15 +73,20 @@ func main() {
 func CTA() error {
 	timezone := "America/Chicago"
 	// TODO: loop through all stops
-	stp, err := cta.GetBusStop(conf.CTA.Bus.StopIDs[0])
-	if err != nil {
-		return err
+	stps := []cta.BusStop{}
+	for _, sp := range conf.CTA.Bus.StopIDs {
+		stp, err := cta.GetBusStop(sp)
+		if err != nil {
+			return err
+		}
+		stps = append(stps, stp)
 	}
 
 	// TODO: add cta trains
-	bf, err := cta.NewBusFeed(stp, conf.CTA.Bus.APIKey, timezone)
-	if err != nil {
-		return err
+	bfs := []*cta.BusFeed{}
+	for _, s := range stps {
+		bf := cta.NewBusFeed(s, conf.CTA.Bus.APIKey, timezone)
+		bfs = append(bfs, bf)
 	}
 
 	sd, err := signdata.NewSignData()
@@ -92,22 +97,24 @@ func CTA() error {
 	defer sd.Canvas.Close()
 
 	for {
-		arrivals, err := bf.GetArrivals()
-		if err != nil {
-			return err
-		}
-
-		if led {
-			// Print all arrivals
-			err = sd.PrintArrivals(arrivals, stp.Name, stp.Direction)
+		for _, f := range bfs {
+			arrivals, err := f.GetArrivals()
 			if err != nil {
 				return err
 			}
-		} else {
-			signdata.PrintArrivalsToStdout(arrivals, stp.Name, stp.Direction)
-		}
 
-		time.Sleep(5 * time.Second)
+			if led {
+				// Print all arrivals
+				err = sd.PrintArrivals(arrivals, f.BusStop.Name, f.BusStop.Direction)
+				if err != nil {
+					return err
+				}
+			} else {
+				signdata.PrintArrivalsToStdout(arrivals, f.BusStop.Name, f.BusStop.Direction)
+			}
+
+			time.Sleep(5 * time.Second)
+		}
 	}
 	return nil
 }

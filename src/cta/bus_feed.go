@@ -14,16 +14,14 @@ type BusFeed struct {
 	Feed BusFeedMessage
 }
 
-func NewBusFeed(busstop BusStop, accessKey, timezone string) (*BusFeed, error) {
+func NewBusFeed(busstop BusStop, accessKey, timezone string) *BusFeed {
 	b := BusFeed{}
 
 	b.Key = accessKey
 	b.Timezone = timezone
 	b.BusStop = busstop
-	feed, err := DecodeBus(accessKey, busstop.StopID, BusFeedURL)
-	b.Feed = feed
 
-	return &b, err
+	return &b
 }
 
 func (b *BusFeed) GetArrivals() ([]signdata.Arrival, error) {
@@ -32,6 +30,13 @@ func (b *BusFeed) GetArrivals() ([]signdata.Arrival, error) {
 	if err != nil {
 		return arrivals, err
 	}
+
+	feed, err := DecodeBus(b.Key, b.BusStop.StopID, BusFeedURL)
+	if err != nil {
+		return arrivals, err
+	}
+
+	b.Feed = feed
 
 	for _, f := range b.Feed.BusTimeResponse.Prd {
 		arr := signdata.Arrival{}

@@ -11,7 +11,8 @@ import (
 
 type BusFeedMessage struct {
 	BusTimeResponse struct {
-		Prd []struct {
+		Error string `json:"error"`
+		Prd   []struct {
 			RouteDir      string `json:"rtdir"`
 			Name          string `json:"rt"`
 			PredictedTime string `json:"prdtm"`
@@ -45,6 +46,7 @@ func DecodeBus(k string, stopID int, url string) (BusFeedMessage, error) {
 	q.Add("key", k)
 	q.Add("format", "json")
 	q.Add("stpid", strconv.Itoa(stopID))
+	q.Add("top", strconv.Itoa(5))
 	req.URL.RawQuery = q.Encode()
 
 	resp, err := client.Do(req)
@@ -54,7 +56,7 @@ func DecodeBus(k string, stopID int, url string) (BusFeedMessage, error) {
 	defer resp.Body.Close()
 
 	// read response code
-	// TODO: make more robust
+	// TODO: more error checks
 	if resp.StatusCode >= 400 {
 		return bf, errors.New(http.StatusText(resp.StatusCode))
 	}

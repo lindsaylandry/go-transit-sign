@@ -103,6 +103,15 @@ func (sd *SignData) PrintArrivals(arrivals []Arrival, name, direction string) er
 
 func (sd *SignData) WriteToMatrix() error {
 	bounds := sd.Canvas.Bounds()
+	// first reset canvas to black
+	for x := bounds.Min.X; x < bounds.Max.X; x++ {
+		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+			if sd.Visual[y][x] > 0 {
+				sd.Canvas.Set(x, y, color.RGBA{255, 0, 0, 0})
+			}
+		}
+	}
+	// next write to canvas
 	for x := bounds.Min.X; x < bounds.Max.X; x++ {
 		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
 			if sd.Visual[y][x] > 0 {
