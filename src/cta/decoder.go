@@ -23,9 +23,9 @@ type BusFeedMessage struct {
 type TrainFeedMessage struct {
 	TrainTimeResponse struct {
 		Eta []struct {
-			RouteDir      string `xml:"rtdir"`
-			Name          string `xml:"rt"`
-			PredictedTime string `xml:"prdtm"`
+			RouteDir           string `xml:"rtdir"`
+			Name               string `xml:"rt"`
+			PredictedCountdown string `xml:"prdctdn"`
 		} `xml:"eta"`
 	} `xml:"ctatt"`
 }

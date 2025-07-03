@@ -1,0 +1,18 @@
+emulate: true
+cta:
+  train:
+    stop_ids: 
+      - 30215
+    api_key: <API_KEY>
+  bus:
+    stop_ids:
+      - 5908
+      - 17123
+    api_key: <API_KEY>
+nycmta:
+  api_key: <API_KEY>
+  bus:
+    stop_ids: []
+  train:
+    stop_ids: 
+      - D30

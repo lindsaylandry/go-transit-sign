@@ -10,8 +10,6 @@ type BusFeed struct {
 	BusStop  BusStop
 	Key      string
 	Timezone string
-
-	Feed BusFeedMessage
 }
 
 func NewBusFeed(busstop BusStop, accessKey, timezone string) *BusFeed {
@@ -34,15 +32,16 @@ func (b *BusFeed) GetArrivals() ([]signdata.Arrival, error) {
 
 	// TODO: read feed errors
 
-	b.Feed = feed
-
-	for _, f := range b.Feed.BusTimeResponse.Prd {
+	for _, f := range feed.BusTimeResponse.Prd {
 		arr := signdata.Arrival{}
 		arr.Label = f.Name
 
-		mins, err := strconv.Atoi(f.PredictedCountdown)
-		if err != nil {
-			return arrivals, err
+		mins := 0
+		if f.PredictedCountdown != "DUE" {
+			mins, err = strconv.Atoi(f.PredictedCountdown)
+			if err != nil {
+				return arrivals, err
+			}
 		}
 		arr.Secs = int64(mins * 60)
 

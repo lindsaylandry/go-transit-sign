@@ -27,20 +27,28 @@ type BusStop struct {
 	Direction string
 }
 
-func GetBusStop(stopID int) (BusStop, error) {
-	stop := BusStop{}
-	stops, err := readBusStops("data/cta-bus-stations.kml")
+func GetBusStops(stopIDs []int) ([]BusStop, error) {
+	stops := []BusStop{}
+	data, err := readBusStops("data/cta-bus-stations.kml")
 	if err != nil {
-		return stop, err
+		return stops, err
 	}
 
-	for _, s := range stops {
-		if s.StopID == stopID {
-			return s, nil
+	for _, id := range stopIDs {
+		found := false
+		for _, s := range data {
+			if s.StopID == id {
+				stops = append(stops, s)
+				found = true
+				break
+			}
+		}
+		if !found {
+			return stops, fmt.Errorf("Could not find bus stop %d", id)
 		}
 	}
 
-	return stop, fmt.Errorf("Could not find bus stop %d", stopID)
+	return stops, nil
 }
 
 func readBusStops(filepath string) ([]BusStop, error) {

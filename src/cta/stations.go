@@ -26,7 +26,7 @@ type Station struct {
 	Location        string `csv:"Location"`
 }
 
-func GetStation(mapID int) (Station, error) {
+func GetStation(stopID int) (Station, error) {
 	station := Station{}
 	stations, err := readStations("data/cta-rail-stations.csv")
 	if err != nil {
@@ -35,12 +35,12 @@ func GetStation(mapID int) (Station, error) {
 
 	// Find station, return error if not found
 	for _, s := range stations {
-		if s.MapID == mapID {
+		if s.StopID == stopID {
 			return s, nil
 		}
 	}
 
-	return station, fmt.Errorf("Could not find station %s", mapID)
+	return station, fmt.Errorf("Could not find station %d", stopID)
 }
 
 func readStations(filepath string) ([]Station, error) {
