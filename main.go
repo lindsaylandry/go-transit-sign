@@ -71,7 +71,6 @@ func main() {
 }
 
 func CTA() error {
-	timezone := "America/Chicago"
 	stps, err := cta.GetBusStops(conf.CTA.Bus.StopIDs)
 	if err != nil {
 		return err
@@ -88,13 +87,13 @@ func CTA() error {
 
 	bfs := []*cta.BusFeed{}
 	for _, s := range stps {
-		bf := cta.NewBusFeed(s, conf.CTA.Bus.APIKey, timezone)
+		bf := cta.NewBusFeed(s, conf.CTA.Bus.APIKey)
 		bfs = append(bfs, bf)
 	}
 
 	tfs := []*cta.TrainFeed{}
 	for _, s := range stns {
-		tf := cta.NewTrainFeed(s, conf.CTA.Train.APIKey, timezone)
+		tf := cta.NewTrainFeed(s, conf.CTA.Train.APIKey)
 		tfs = append(tfs, tf)
 	}
 

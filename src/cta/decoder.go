@@ -2,7 +2,6 @@ package cta
 
 import (
 	"encoding/json"
-	"encoding/xml"
 	"errors"
 	"io"
 	"net/http"
@@ -22,12 +21,14 @@ type BusFeedMessage struct {
 
 type TrainFeedMessage struct {
 	TrainTimeResponse struct {
-		Eta []struct {
-			RouteDir           string `xml:"rtdir"`
-			Name               string `xml:"rt"`
-			PredictedCountdown string `xml:"prdctdn"`
-		} `xml:"eta"`
-	} `xml:"ctatt"`
+		Timestamp string `json:"tmst"`
+		Eta       []struct {
+			Destination string `json:"destNm"`
+			Name        string `json:"rt"`
+			ArrivalTime string `json:"arrT"`
+		} `json:"eta"`
+		Error string `json:"errNm"`
+	} `json:"ctatt"`
 }
 
 var BusFeedURL = "http://www.ctabustracker.com/bustime/api/v2/getpredictions"
@@ -83,6 +84,7 @@ func DecodeTrain(k string, stopID int, url string) (TrainFeedMessage, error) {
 	q.Add("key", k)
 	q.Add("max", "5")
 	q.Add("stpid", strconv.Itoa(stopID))
+	q.Add("outputType", "JSON")
 	req.URL.RawQuery = q.Encode()
 
 	resp, err := client.Do(req)
@@ -102,7 +104,7 @@ func DecodeTrain(k string, stopID int, url string) (TrainFeedMessage, error) {
 		return tf, err
 	}
 
-	err = xml.Unmarshal(body, &tf)
+	err = json.Unmarshal(body, &tf)
 
 	return tf, err
 }

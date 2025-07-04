@@ -7,16 +7,14 @@ import (
 )
 
 type BusFeed struct {
-	BusStop  BusStop
-	Key      string
-	Timezone string
+	BusStop BusStop
+	Key     string
 }
 
-func NewBusFeed(busstop BusStop, accessKey, timezone string) *BusFeed {
+func NewBusFeed(busstop BusStop, accessKey string) *BusFeed {
 	b := BusFeed{}
 
 	b.Key = accessKey
-	b.Timezone = timezone
 	b.BusStop = busstop
 
 	return &b

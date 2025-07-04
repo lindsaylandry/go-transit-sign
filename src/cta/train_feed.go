@@ -1,22 +1,21 @@
 package cta
 
 import (
-	"strconv"
+	"errors"
+	"time"
 
 	"github.com/lindsaylandry/go-transit-sign/src/signdata"
 )
 
 type TrainFeed struct {
-	Station  Station
-	Key      string
-	Timezone string
+	Station Station
+	Key     string
 }
 
-func NewTrainFeed(station Station, accessKey, timezone string) *TrainFeed {
+func NewTrainFeed(station Station, accessKey string) *TrainFeed {
 	b := TrainFeed{}
 
 	b.Key = accessKey
-	b.Timezone = timezone
 	b.Station = station
 
 	return &b
@@ -28,19 +27,26 @@ func (t *TrainFeed) GetArrivals() ([]signdata.Arrival, error) {
 	if err != nil {
 		return arrivals, err
 	}
+	if feed.TrainTimeResponse.Error != "" {
+		return arrivals, errors.New(feed.TrainTimeResponse.Error)
+	}
+
+	tmst, err := time.Parse("2006-01-02T15:04:05", feed.TrainTimeResponse.Timestamp)
+	if err != nil {
+		return arrivals, err
+	}
 
 	for _, f := range feed.TrainTimeResponse.Eta {
 		arr := signdata.Arrival{}
 		arr.Label = f.Name
 
-		mins := 0
-		if f.PredictedCountdown != "DUE" {
-			mins, err = strconv.Atoi(f.PredictedCountdown)
-			if err != nil {
-				return arrivals, err
-			}
-			arr.Secs = int64(mins * 60)
+		// use time to get minutes
+		prdtm, err := time.Parse("2006-01-02T15:04:05", f.ArrivalTime)
+		if err != nil {
+			return arrivals, err
 		}
+
+		arr.Secs = prdtm.Unix() - tmst.Unix()
 
 		arrivals = append(arrivals, arr)
 	}
