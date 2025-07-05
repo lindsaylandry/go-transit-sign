@@ -52,6 +52,39 @@ func getLetters() map[rune]Letter {
 		},
 	}
 
+	letters['('] = Letter{
+		Design: [6][]uint8{
+			{0, 1},
+			{1, 0},
+			{1, 0},
+			{1, 0},
+			{0, 1},
+			{0, 0},
+		},
+	}
+
+	letters[')'] = Letter{
+		Design: [6][]uint8{
+			{1, 0},
+			{0, 1},
+			{0, 1},
+			{0, 1},
+			{1, 0},
+			{0, 0},
+		},
+	}
+
+	letters['-'] = Letter{
+		Design: [6][]uint8{
+			{0, 0},
+			{0, 0},
+			{1, 1},
+			{0, 0},
+			{0, 0},
+			{0, 0},
+		},
+	}
+
 	letters['a'] = Letter{
 		Design: [6][]uint8{
 			{0, 0, 0},

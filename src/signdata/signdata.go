@@ -12,7 +12,7 @@ import (
 )
 
 type SignData struct {
-	Visual [32][64]uint8
+	Visual [32][64]color.RGBA
 	Matrix rgbmatrix.Matrix
 	Canvas *rgbmatrix.Canvas
 }
@@ -64,6 +64,13 @@ func PrintArrivalsToStdout(arrivals []Arrival, name, direction string) {
 }
 
 func (sd *SignData) PrintArrivals(arrivals []Arrival, name, direction string) error {
+	// Reset canvas to black
+	for i, c := range sd.Visual {
+		for j, _ := range c {
+			sd.Visual[i][j] = color.RGBA{0, 0, 0, 255}
+		}
+	}
+
 	assembly, err := writer.CreateVisualString(name)
 	if err != nil {
 		return err
@@ -103,20 +110,9 @@ func (sd *SignData) PrintArrivals(arrivals []Arrival, name, direction string) er
 
 func (sd *SignData) WriteToMatrix() error {
 	bounds := sd.Canvas.Bounds()
-	// first reset canvas to black
 	for x := bounds.Min.X; x < bounds.Max.X; x++ {
 		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
-			if sd.Visual[y][x] > 0 {
-				sd.Canvas.Set(x, y, color.RGBA{255, 0, 0, 0})
-			}
-		}
-	}
-	// next write to canvas
-	for x := bounds.Min.X; x < bounds.Max.X; x++ {
-		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
-			if sd.Visual[y][x] > 0 {
-				sd.Canvas.Set(x, y, color.RGBA{255, 0, 0, 255})
-			}
+			sd.Canvas.Set(x, y, sd.Visual[y][x])
 		}
 	}
 	return sd.Canvas.Render()
@@ -141,7 +137,11 @@ func (sd *SignData) addTitle(title [][]uint8) {
 		for j, b := range a {
 			// Truncate for now
 			if len(sd.Visual[0]) > j {
-				sd.Visual[i][j] = b
+				if b > 0 {
+					sd.Visual[i][j] = color.RGBA{0, 0, 255, 255}
+				} else {
+					sd.Visual[i][j] = color.RGBA{0, 0, 0, 255}
+				}
 			}
 		}
 	}
@@ -155,7 +155,11 @@ func (sd *SignData) addArrival(arrival [][]uint8, index int) {
 		for j, b := range a {
 			// Truncate for now
 			if len(sd.Visual[0]) > j && len(sd.Visual) > i+start+1 {
-				sd.Visual[i+start][j] = b
+				if b > 0 {
+					sd.Visual[i+start][j] = color.RGBA{255, 255, 255, 255}
+				} else {
+					sd.Visual[i+start][j] = color.RGBA{0, 0, 0, 255}
+				}
 			}
 		}
 	}
@@ -169,7 +173,11 @@ func (sd *SignData) addDirection(direction [][]uint8) {
 		for j, b := range a {
 			// Truncate for now
 			if len(sd.Visual[0]) > j && len(sd.Visual) > i+start+1 {
-				sd.Visual[i+start][j] = b
+				if b > 0 {
+					sd.Visual[i+start][j] = color.RGBA{255, 0, 0, 255}
+				} else {
+					sd.Visual[i+start][j] = color.RGBA{0, 0, 0, 255}
+				}
 			}
 		}
 	}
