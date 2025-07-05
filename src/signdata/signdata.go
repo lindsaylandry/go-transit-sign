@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"image/color"
 	"sort"
+	"strings"
 
 	"github.com/tfk1410/go-rpi-rgb-led-matrix"
 
-	"github.com/lindsaylandry/go-transit-sign/src/feed"
 	"github.com/lindsaylandry/go-transit-sign/src/signdata/writer"
 )
 
@@ -41,7 +41,7 @@ func NewSignData() (*SignData, error) {
 	return &sd, nil
 }
 
-func PrintArrivalsToStdout(arrivals []feed.Arrival, name, direction string) {
+func PrintArrivalsToStdout(arrivals []Arrival, name, direction string) {
 	fmt.Println(name)
 
 	if len(arrivals) == 0 {
@@ -63,7 +63,7 @@ func PrintArrivalsToStdout(arrivals []feed.Arrival, name, direction string) {
 	fmt.Println()
 }
 
-func (sd *SignData) PrintArrivals(arrivals []feed.Arrival, name, direction string) error {
+func (sd *SignData) PrintArrivals(arrivals []Arrival, name, direction string) error {
 	assembly, err := writer.CreateVisualString(name)
 	if err != nil {
 		return err
@@ -71,7 +71,7 @@ func (sd *SignData) PrintArrivals(arrivals []feed.Arrival, name, direction strin
 	sd.addTitle(assembly)
 
 	if len(arrivals) == 0 {
-		fmt.Println("No trains arriving at this station today")
+		fmt.Println("None")
 		return nil
 	}
 
@@ -103,6 +103,15 @@ func (sd *SignData) PrintArrivals(arrivals []feed.Arrival, name, direction strin
 
 func (sd *SignData) WriteToMatrix() error {
 	bounds := sd.Canvas.Bounds()
+	// first reset canvas to black
+	for x := bounds.Min.X; x < bounds.Max.X; x++ {
+		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+			if sd.Visual[y][x] > 0 {
+				sd.Canvas.Set(x, y, color.RGBA{255, 0, 0, 0})
+			}
+		}
+	}
+	// next write to canvas
 	for x := bounds.Min.X; x < bounds.Max.X; x++ {
 		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
 			if sd.Visual[y][x] > 0 {
@@ -145,7 +154,7 @@ func (sd *SignData) addArrival(arrival [][]uint8, index int) {
 	for i, a := range arrival {
 		for j, b := range a {
 			// Truncate for now
-			if len(sd.Visual[0]) > j && len(sd.Visual[0]) > i+start {
+			if len(sd.Visual[0]) > j && len(sd.Visual) > i+start+1 {
 				sd.Visual[i+start][j] = b
 			}
 		}
@@ -159,7 +168,7 @@ func (sd *SignData) addDirection(direction [][]uint8) {
 	for i, a := range direction {
 		for j, b := range a {
 			// Truncate for now
-			if len(sd.Visual[0]) > j && len(sd.Visual) > i+start {
+			if len(sd.Visual[0]) > j && len(sd.Visual) > i+start+1 {
 				sd.Visual[i+start][j] = b
 			}
 		}
@@ -168,23 +177,23 @@ func (sd *SignData) addDirection(direction [][]uint8) {
 
 func getDirection(direction string) string {
 	var dir string
-	switch direction {
-	case "N", "NB", "NORTH", "North":
+	switch strings.ToUpper(direction) {
+	case "N", "NB", "NORTH":
 		dir = "Northbound"
-	case "S", "SB", "SOUTH", "South":
+	case "S", "SB", "SOUTH":
 		dir = "Southbound"
-	case "W", "WB", "WEST", "West":
+	case "W", "WB", "WEST":
 		dir = "Westbound"
-	case "E", "EB", "EAST", "East":
+	case "E", "EB", "EAST":
 		dir = "Eastbound"
-	case "NW", "NWB", "NORTHWEST", "Northwest":
-		dir = "Northwestbound"
-	case "SW", "SWB", "SOUTHWEST", "Southwest":
-		dir = "Southwestbound"
-	case "NE", "NEB", "NORTHEAST", "Northeast":
-		dir = "Northeastbound"
-	case "SE", "SEB", "SOUTHEAST", "Southeast":
-		dir = "Southeastbound"
+	case "NW", "NWB", "NORTHWEST":
+		dir = "NW-bound"
+	case "SW", "SWB", "SOUTHWEST":
+		dir = "SW-bound"
+	case "NE", "NEB", "NORTHEAST":
+		dir = "NE-bound"
+	case "SE", "SEB", "SOUTHEAST":
+		dir = "SE-bound"
 	default:
 		dir = direction
 	}

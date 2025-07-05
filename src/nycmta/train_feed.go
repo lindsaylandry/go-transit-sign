@@ -1,27 +1,22 @@
-package feed
+package nycmta
 
 import (
-	"github.com/MobilityData/gtfs-realtime-bindings/golang/gtfs"
 	"time"
 
-	"github.com/lindsaylandry/go-transit-sign/src/decoder"
-	"github.com/lindsaylandry/go-transit-sign/src/stations"
+	"github.com/MobilityData/gtfs-realtime-bindings/golang/gtfs"
+
+	"github.com/lindsaylandry/go-transit-sign/src/signdata"
 )
 
 type TrainFeed struct {
-	Station   stations.MtaStation
+	Station   Station
 	Key       string
 	Direction string
 
 	Feed *gtfs.FeedMessage
 }
 
-type Arrival struct {
-	Label string
-	Secs  int64
-}
-
-func NewTrainFeed(station stations.MtaStation, accessKey, direction, url string) (*TrainFeed, error) {
+func NewTrainFeed(station Station, accessKey, direction, url string) (*TrainFeed, error) {
 	t := TrainFeed{}
 
 	t.Key = accessKey
@@ -29,16 +24,16 @@ func NewTrainFeed(station stations.MtaStation, accessKey, direction, url string)
 
 	t.Station = station
 
-	feed, err := decoder.DecodeNYCMTA(accessKey, url)
+	feed, err := DecodeNYCMTA(accessKey, url)
 	t.Feed = feed
 
 	return &t, err
 }
 
-func (t *TrainFeed) GetArrivals() []Arrival {
+func (t *TrainFeed) GetArrivals() []signdata.Arrival {
 	stopID := t.Station.GTFSStopID + t.Direction
 	now := time.Now()
-	arrivals := []Arrival{}
+	arrivals := []signdata.Arrival{}
 	for _, entity := range t.Feed.Entity {
 		trip := entity.GetTripUpdate()
 		if trip != nil {
@@ -57,7 +52,7 @@ func (t *TrainFeed) GetArrivals() []Arrival {
 
 					secs := *s.Arrival.Time + int64(delay) - now.Unix()
 
-					a := Arrival{}
+					a := signdata.Arrival{}
 					a.Label = route
 					a.Secs = secs
 

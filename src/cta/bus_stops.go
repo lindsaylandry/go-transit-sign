@@ -1,4 +1,4 @@
-package busstops
+package cta
 
 import (
 	"bytes"
@@ -11,24 +11,48 @@ import (
 	"golang.org/x/net/html"
 )
 
-func GetBusStop(stopID string) (CTABusStop, error) {
-	stop := CTABusStop{}
-	stops, err := readBusStops("data/cta-bus-stations.kml")
+type KMLDescription struct {
+	Document struct {
+		Placemarks []struct {
+			Description []byte `xml:"description"`
+		} `xml:"Placemark"`
+	} `xml:"Document>Folder"`
+}
+
+type BusStop struct {
+	Name      string
+	StopID    int
+	PositionX float64
+	PositionY float64
+	Direction string
+}
+
+func GetBusStops(stopIDs []int) ([]BusStop, error) {
+	stops := []BusStop{}
+	data, err := readBusStops("data/cta-bus-stations.kml")
 	if err != nil {
-		return stop, err
+		return stops, err
 	}
 
-	for _, s := range stops {
-		if s.StopID == stopID {
-			return s, nil
+	for _, id := range stopIDs {
+		found := false
+		for _, s := range data {
+			if s.StopID == id {
+				stops = append(stops, s)
+				found = true
+				break
+			}
+		}
+		if !found {
+			return stops, fmt.Errorf("Could not find bus stop %d", id)
 		}
 	}
 
-	return stop, fmt.Errorf("Could not find bus stop %s", stopID)
+	return stops, nil
 }
 
-func readBusStops(filepath string) ([]CTABusStop, error) {
-	busStops := []CTABusStop{}
+func readBusStops(filepath string) ([]BusStop, error) {
+	busStops := []BusStop{}
 	descriptions := KMLDescription{}
 	data, err := os.ReadFile(filepath)
 	if err != nil {
@@ -40,7 +64,7 @@ func readBusStops(filepath string) ([]CTABusStop, error) {
 	}
 
 	for _, d := range descriptions.Document.Placemarks {
-		bus := CTABusStop{}
+		bus := BusStop{}
 
 		z := html.NewTokenizer(bytes.NewReader(d.Description))
 		content := []string{}
@@ -65,7 +89,7 @@ func readBusStops(filepath string) ([]CTABusStop, error) {
 		for i, v := range content {
 			switch v {
 			case "SYSTEMSTOP":
-				bus.StopID = content[i+1]
+				bus.StopID, err = strconv.Atoi(content[i+1])
 			case "PUBLIC_NAME":
 				bus.Name = content[i+1]
 			case "DIR":

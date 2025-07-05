@@ -1,20 +1,24 @@
 package main
 
 import (
+	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/tfk1410/go-rpi-rgb-led-matrix"
 
-	"github.com/lindsaylandry/go-transit-sign/src/busstops"
-	"github.com/lindsaylandry/go-transit-sign/src/decoder"
-	"github.com/lindsaylandry/go-transit-sign/src/feed"
+	"github.com/lindsaylandry/go-transit-sign/src/config"
+	"github.com/lindsaylandry/go-transit-sign/src/cta"
+	"github.com/lindsaylandry/go-transit-sign/src/nycmta"
 	"github.com/lindsaylandry/go-transit-sign/src/signdata"
-	"github.com/lindsaylandry/go-transit-sign/src/stations"
 )
 
-var stop, key, direction string
-var cont, train, led bool
+var direction string
+var led bool
+var conf config.Config
 
 func main() {
 	rootCmd := &cobra.Command{
@@ -50,30 +54,50 @@ func main() {
 	rootCmd.AddCommand(ctaCmd)
 	rootCmd.AddCommand(testMatrix)
 
-	rootCmd.PersistentFlags().StringVarP(&stop, "stop", "s", "D30", "stop to parse")
-	rootCmd.PersistentFlags().StringVarP(&key, "key", "k", "foobar", "API access key")
-	rootCmd.PersistentFlags().BoolVarP(&cont, "continue", "c", true, "continue printing arrivals")
-	rootCmd.PersistentFlags().BoolVarP(&train, "train", "t", true, "train or bus (train=true, bus=false)")
 	rootCmd.PersistentFlags().StringVarP(&direction, "direction", "d", "N", "direction (trains only)")
 	rootCmd.PersistentFlags().BoolVarP(&led, "led", "l", false, "output to led matrix")
 
-	err := rootCmd.Execute()
+	config, err := config.NewConfig()
+	if err != nil {
+		panic(err)
+	}
+	conf = *config
+
+	if conf.Emulate {
+		os.Setenv("MATRIX_EMULATOR", "1")
+	}
+
+	err = rootCmd.Execute()
 	if err != nil {
 		panic(err)
 	}
 }
 
 func CTA() error {
-	timezone := "America/Chicago"
-	stp, err := busstops.GetBusStop(stop)
+	stps, err := cta.GetBusStops(conf.CTA.Bus.StopIDs)
 	if err != nil {
 		return err
 	}
 
-	// TODO: add cta trains
-	bf, err := feed.NewBusFeed(stp, key, timezone)
-	if err != nil {
-		return err
+	stns := []cta.Station{}
+	for _, stn := range conf.CTA.Train.StopIDs {
+		stn, err := cta.GetStation(stn)
+		if err != nil {
+			return err
+		}
+		stns = append(stns, stn)
+	}
+
+	bfs := []*cta.BusFeed{}
+	for _, s := range stps {
+		bf := cta.NewBusFeed(s, conf.CTA.Bus.APIKey)
+		bfs = append(bfs, bf)
+	}
+
+	tfs := []*cta.TrainFeed{}
+	for _, s := range stns {
+		tf := cta.NewTrainFeed(s, conf.CTA.Train.APIKey)
+		tfs = append(tfs, tf)
 	}
 
 	sd, err := signdata.NewSignData()
@@ -83,40 +107,52 @@ func CTA() error {
 	sd.Canvas = rgbmatrix.NewCanvas(sd.Matrix)
 	defer sd.Canvas.Close()
 
-	for {
-		arrivals, err := bf.GetArrivals()
-		if err != nil {
-			return err
-		}
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
-		if led {
-			// Print all arrivals
-			err = sd.PrintArrivals(arrivals, stp.Name, stp.Direction)
-			if err != nil {
-				return err
+	go func() {
+		for {
+			for _, f := range bfs {
+				arrivals, err := f.GetArrivals()
+				if err != nil {
+					panic(err)
+				}
+
+				if err := printArrivals(sd, arrivals, f.BusStop.Name, f.BusStop.Direction); err != nil {
+					panic(err)
+				}
+
+				time.Sleep(5 * time.Second)
 			}
-		} else {
-			signdata.PrintArrivalsToStdout(arrivals, stp.Name, stp.Direction)
-		}
 
-		if !cont {
-			break
-		}
+			for _, f := range tfs {
+				arrivals, err := f.GetArrivals()
+				if err != nil {
+					panic(err)
+				}
 
-		time.Sleep(5 * time.Second)
-	}
+				if err := printArrivals(sd, arrivals, f.Station.StopName, f.Station.DirectionID); err != nil {
+					panic(err)
+				}
+
+				time.Sleep(5 * time.Second)
+			}
+		}
+	}()
+	s := <-sigChan
+	fmt.Printf("Received signal in main: %s. Shutting down\n", s)
 	return nil
 }
 
 func NYCMTA() error {
 	//timezone := "America/New_York"
-	station, err := stations.GetStation(stop)
+	station, err := nycmta.GetStation(conf.NYCMTA.Train.StopIDs[0])
 	if err != nil {
 		return err
 	}
 
 	// Get subway feeds from station trains
-	feeds := decoder.GetMtaTrainDecoders(station.DaytimeRoutes)
+	feeds := nycmta.GetMtaTrainDecoders(station.DaytimeRoutes)
 
 	sd, err := signdata.NewSignData()
 	if err != nil {
@@ -125,35 +161,32 @@ func NYCMTA() error {
 	sd.Canvas = rgbmatrix.NewCanvas(sd.Matrix)
 	defer sd.Canvas.Close()
 
-	for {
-		arrivals := []feed.Arrival{}
-		for _, f := range *feeds {
-			t, err := feed.NewTrainFeed(station, key, direction, f.URL)
-			if err != nil {
-				return err
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		for {
+			arrivals := []signdata.Arrival{}
+			for _, f := range *feeds {
+				// TODO: get buses
+				t, err := nycmta.NewTrainFeed(station, conf.NYCMTA.APIKey, direction, f.URL)
+				if err != nil {
+					panic(err)
+				}
+
+				arr := t.GetArrivals()
+				arrivals = append(arrivals, arr...)
 			}
 
-			arr := t.GetArrivals()
-			arrivals = append(arrivals, arr...)
-		}
-
-		// Print all arrivals
-		if led {
-			err = sd.PrintArrivals(arrivals, station.StopName, direction)
-			if err != nil {
-				return err
+			if err := printArrivals(sd, arrivals, station.StopName, direction); err != nil {
+				panic(err)
 			}
-		} else {
-			signdata.PrintArrivalsToStdout(arrivals, station.StopName, direction)
+
+			time.Sleep(5 * time.Second)
 		}
-
-		if !cont {
-			break
-		}
-
-		time.Sleep(5 * time.Second)
-	}
-
+	}()
+	s := <-sigChan
+	fmt.Printf("Received signal in main: %s. Shutting down\n", s)
 	return nil
 }
 
@@ -167,4 +200,15 @@ func TestMatrix() error {
 	defer sd.Canvas.Close()
 
 	return sd.WriteTestMatrix()
+}
+
+func printArrivals(sd *signdata.SignData, arrivals []signdata.Arrival, name, direction string) error {
+	if led {
+		if err := sd.PrintArrivals(arrivals, name, direction); err != nil {
+			return err
+		}
+	} else {
+		signdata.PrintArrivalsToStdout(arrivals, name, direction)
+	}
+	return nil
 }
