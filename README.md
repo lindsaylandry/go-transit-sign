@@ -27,8 +27,8 @@ Running this the first time will result in errors. To fix these, follow these in
 
 ### Config File
 
-This app requires a config file to run, located in `config/config.yaml`
-Use the example `config.example.yaml` to build your config for your needs.
+This app requires a config file to run, located in `configs/config.yaml`
+Use the example (config.example.yaml)[configs/config.example.yaml] to build your config for your needs.
 
 ### Manual
 
