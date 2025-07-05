@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -104,45 +107,52 @@ func CTA() error {
 	sd.Canvas = rgbmatrix.NewCanvas(sd.Matrix)
 	defer sd.Canvas.Close()
 
-	for {
-		for _, f := range bfs {
-			arrivals, err := f.GetArrivals()
-			if err != nil {
-				return err
-			}
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
-			if led {
-				// Print all arrivals
-				err = sd.PrintArrivals(arrivals, f.BusStop.Name, f.BusStop.Direction)
+	go func() error {
+		for {
+			for _, f := range bfs {
+				arrivals, err := f.GetArrivals()
 				if err != nil {
 					return err
 				}
-			} else {
-				signdata.PrintArrivalsToStdout(arrivals, f.BusStop.Name, f.BusStop.Direction)
+
+				if led {
+					// Print all arrivals
+					err = sd.PrintArrivals(arrivals, f.BusStop.Name, f.BusStop.Direction)
+					if err != nil {
+						return err
+					}
+				} else {
+					signdata.PrintArrivalsToStdout(arrivals, f.BusStop.Name, f.BusStop.Direction)
+				}
+
+				time.Sleep(5 * time.Second)
 			}
 
-			time.Sleep(5 * time.Second)
-		}
-
-		for _, f := range tfs {
-			arrivals, err := f.GetArrivals()
-			if err != nil {
-				return err
-			}
-
-			if led {
-				// Print all arrivals
-				err = sd.PrintArrivals(arrivals, f.Station.StopName, f.Station.DirectionID)
+			for _, f := range tfs {
+				arrivals, err := f.GetArrivals()
 				if err != nil {
 					return err
 				}
-			} else {
-				signdata.PrintArrivalsToStdout(arrivals, f.Station.StopName, f.Station.DirectionID)
-			}
 
-			time.Sleep(5 * time.Second)
+				if led {
+					// Print all arrivals
+					err = sd.PrintArrivals(arrivals, f.Station.StopName, f.Station.DirectionID)
+					if err != nil {
+						return err
+					}
+				} else {
+					signdata.PrintArrivalsToStdout(arrivals, f.Station.StopName, f.Station.DirectionID)
+				}
+
+				time.Sleep(5 * time.Second)
+			}
 		}
-	}
+	} ()
+	s := <-sigChan
+	fmt.Printf("Received signal in main: %s. Shutting down...\n", s)
 	return nil
 }
 
@@ -163,32 +173,38 @@ func NYCMTA() error {
 	sd.Canvas = rgbmatrix.NewCanvas(sd.Matrix)
 	defer sd.Canvas.Close()
 
-	for {
-		arrivals := []signdata.Arrival{}
-		for _, f := range *feeds {
-			// TODO: get buses
-			t, err := nycmta.NewTrainFeed(station, conf.NYCMTA.APIKey, direction, f.URL)
-			if err != nil {
-				return err
+	sigChan := make(chan os.Signal, 1)
+  signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() error {
+		for {
+			arrivals := []signdata.Arrival{}
+			for _, f := range *feeds {
+				// TODO: get buses
+				t, err := nycmta.NewTrainFeed(station, conf.NYCMTA.APIKey, direction, f.URL)
+				if err != nil {
+					return err
+				}
+
+				arr := t.GetArrivals()
+				arrivals = append(arrivals, arr...)
 			}
 
-			arr := t.GetArrivals()
-			arrivals = append(arrivals, arr...)
-		}
-
-		// Print all arrivals
-		if led {
-			err = sd.PrintArrivals(arrivals, station.StopName, direction)
-			if err != nil {
-				return err
+			// Print all arrivals
+			if led {
+				err = sd.PrintArrivals(arrivals, station.StopName, direction)
+				if err != nil {
+					return err
+				}
+			} else {
+				signdata.PrintArrivalsToStdout(arrivals, station.StopName, direction)
 			}
-		} else {
-			signdata.PrintArrivalsToStdout(arrivals, station.StopName, direction)
+
+			time.Sleep(5 * time.Second)
 		}
-
-		time.Sleep(5 * time.Second)
-	}
-
+	} ()
+	s := <-sigChan
+  fmt.Printf("Received signal in main: %s. Shutting down...\n", s)
 	return nil
 }
 
