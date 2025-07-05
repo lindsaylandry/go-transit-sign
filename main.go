@@ -150,7 +150,7 @@ func CTA() error {
 				time.Sleep(5 * time.Second)
 			}
 		}
-	} ()
+	}()
 	s := <-sigChan
 	fmt.Printf("Received signal in main: %s. Shutting down...\n", s)
 	return nil
@@ -174,7 +174,7 @@ func NYCMTA() error {
 	defer sd.Canvas.Close()
 
 	sigChan := make(chan os.Signal, 1)
-  signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() error {
 		for {
@@ -202,9 +202,9 @@ func NYCMTA() error {
 
 			time.Sleep(5 * time.Second)
 		}
-	} ()
+	}()
 	s := <-sigChan
-  fmt.Printf("Received signal in main: %s. Shutting down...\n", s)
+	fmt.Printf("Received signal in main: %s. Shutting down...\n", s)
 	return nil
 }
 
