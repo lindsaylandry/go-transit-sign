@@ -1,9 +1,7 @@
 # go-transit-sign
 GoLang Project for downloading transit data and broadcasting to LED Matrix signs.
 
-Currently will print to STDOUT for MTA train lines.
-
-Broadcasting to LED Matrix is a work in progress.
+This project currently broadcasts to Adafruit 64x32 LED Matrix for CTA buses and trains, and NYC MTA trains.
 
 ## Dependencies
 
@@ -27,6 +25,11 @@ go build
 Running this the first time will result in errors. To fix these, follow these instructions from
 [tfK1410/go-rpi-rgb-led-matrix](https://github.com/tfK1410/go-rpi-rgb-led-matrix?tab=readme-ov-file#installation)
 
+### Config File
+
+This app requires a config file to run, located in `config/config.yaml`
+Use the example `config.example.yaml` to build your config for your needs.
+
 ### Manual
 
 ```
@@ -40,23 +43,15 @@ Available Commands:
   cta         Run CTA data
   help        Help about any command
   nyc-mta     Run NYC MTA data
+  testMatrix  Test LED Matrix
 
 Flags:
-  -c, --continue           continue printing arrivals (default true)
   -d, --direction string   direction (trains only) (default "N")
   -h, --help               help for transit-sign
-  -k, --key string         API access key (default "foobar")
   -l, --led                output to led matrix
-  -s, --stop string        stop to parse (default "D30")
-  -t, --train              train or bus (train=true, bus=false) (default true)
 
 Use "transit-sign [command] --help" for more information about a command.
 ```
-
-### Compile
-
-To build the binary run:
-`go build`
 
 ## How to Get API Keys
 
