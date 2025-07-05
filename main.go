@@ -110,22 +110,16 @@ func CTA() error {
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
-	go func() error {
+	go func() {
 		for {
 			for _, f := range bfs {
 				arrivals, err := f.GetArrivals()
 				if err != nil {
-					return err
+					panic(err)
 				}
 
-				if led {
-					// Print all arrivals
-					err = sd.PrintArrivals(arrivals, f.BusStop.Name, f.BusStop.Direction)
-					if err != nil {
-						return err
-					}
-				} else {
-					signdata.PrintArrivalsToStdout(arrivals, f.BusStop.Name, f.BusStop.Direction)
+				if err := printArrivals(sd, arrivals, f.BusStop.Name, f.BusStop.Direction); err != nil {
+					panic(err)
 				}
 
 				time.Sleep(5 * time.Second)
@@ -134,17 +128,11 @@ func CTA() error {
 			for _, f := range tfs {
 				arrivals, err := f.GetArrivals()
 				if err != nil {
-					return err
+					panic(err)
 				}
 
-				if led {
-					// Print all arrivals
-					err = sd.PrintArrivals(arrivals, f.Station.StopName, f.Station.DirectionID)
-					if err != nil {
-						return err
-					}
-				} else {
-					signdata.PrintArrivalsToStdout(arrivals, f.Station.StopName, f.Station.DirectionID)
+				if err := printArrivals(sd, arrivals, f.Station.StopName, f.Station.DirectionID); err != nil {
+					panic(err)
 				}
 
 				time.Sleep(5 * time.Second)
@@ -152,7 +140,7 @@ func CTA() error {
 		}
 	}()
 	s := <-sigChan
-	fmt.Printf("Received signal in main: %s. Shutting down...\n", s)
+	fmt.Printf("Received signal in main: %s. Shutting down\n", s)
 	return nil
 }
 
@@ -176,35 +164,29 @@ func NYCMTA() error {
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
-	go func() error {
+	go func() {
 		for {
 			arrivals := []signdata.Arrival{}
 			for _, f := range *feeds {
 				// TODO: get buses
 				t, err := nycmta.NewTrainFeed(station, conf.NYCMTA.APIKey, direction, f.URL)
 				if err != nil {
-					return err
+					panic(err)
 				}
 
 				arr := t.GetArrivals()
 				arrivals = append(arrivals, arr...)
 			}
 
-			// Print all arrivals
-			if led {
-				err = sd.PrintArrivals(arrivals, station.StopName, direction)
-				if err != nil {
-					return err
-				}
-			} else {
-				signdata.PrintArrivalsToStdout(arrivals, station.StopName, direction)
+			if err := printArrivals(sd, arrivals, station.StopName, direction); err != nil {
+				panic(err)
 			}
 
 			time.Sleep(5 * time.Second)
 		}
 	}()
 	s := <-sigChan
-	fmt.Printf("Received signal in main: %s. Shutting down...\n", s)
+	fmt.Printf("Received signal in main: %s. Shutting down\n", s)
 	return nil
 }
 
@@ -218,4 +200,15 @@ func TestMatrix() error {
 	defer sd.Canvas.Close()
 
 	return sd.WriteTestMatrix()
+}
+
+func printArrivals(sd *signdata.SignData, arrivals []signdata.Arrival, name, direction string) error {
+	if led {
+		if err := sd.PrintArrivals(arrivals, name, direction); err != nil {
+			return err
+		}
+	} else {
+		signdata.PrintArrivalsToStdout(arrivals, name, direction)
+	}
+	return nil
 }
