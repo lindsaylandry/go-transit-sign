@@ -5,6 +5,7 @@ import (
 	"image/color"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/tfk1410/go-rpi-rgb-led-matrix"
 
@@ -15,6 +16,7 @@ type SignData struct {
 	Visual [32][64]color.RGBA
 	Matrix rgbmatrix.Matrix
 	Canvas *rgbmatrix.Canvas
+	titleWrap int
 }
 
 func NewSignData() (*SignData, error) {
@@ -71,12 +73,6 @@ func (sd *SignData) PrintArrivals(arrivals []Arrival, name, direction string) er
 		}
 	}
 
-	assembly, err := writer.CreateVisualString(name)
-	if err != nil {
-		return err
-	}
-	sd.addTitle(assembly)
-
 	if len(arrivals) == 0 {
 		fmt.Println("None")
 		return nil
@@ -90,7 +86,7 @@ func (sd *SignData) PrintArrivals(arrivals []Arrival, name, direction string) er
 		} else {
 			str = fmt.Sprintf("%d min", a.Secs/60)
 		}
-		assembly, err = writer.CreateVisualNextArrival(a.Label, str, 64)
+		assembly, err := writer.CreateVisualNextArrival(a.Label, str, 64)
 		if err != nil {
 			return err
 		}
@@ -99,13 +95,32 @@ func (sd *SignData) PrintArrivals(arrivals []Arrival, name, direction string) er
 
 	dir := getDirection(direction)
 
-	assembly, err = writer.CreateVisualString(dir)
+	assembly, err := writer.CreateVisualString(dir)
 	if err != nil {
 		return err
 	}
 	sd.addDirection(assembly)
 
-	return sd.WriteToMatrix()
+	// Title going last (scroll through title)
+	titleAssembly, err := writer.CreateVisualString(name)
+  if err != nil {
+    return err
+  }
+	index := -1
+	if len(titleAssembly[0]) > len(sd.Visual[0]) {
+		index = 0
+	}
+	
+	for index >= 0 {
+		sd.addTitle(titleAssembly, &index)
+
+		if err := sd.WriteToMatrix(); err != nil {
+			return err
+		}
+
+		time.Sleep(10*time.Microsecond)
+	}
+	return nil
 }
 
 func (sd *SignData) WriteToMatrix() error {
@@ -132,17 +147,23 @@ func (sd *SignData) WriteTestMatrix() error {
 	return nil
 }
 
-func (sd *SignData) addTitle(title [][]uint8) {
+func (sd *SignData) addTitle(title [][]uint8, index *int) {
 	for i, a := range title {
-		for j, b := range a {
+		for j, _ := range a {
 			// Truncate for now
 			if len(sd.Visual[0]) > j {
-				if b > 0 {
+				if a[j+*index] > 0 {
 					sd.Visual[i][j] = color.RGBA{0, 0, 255, 255}
 				} else {
 					sd.Visual[i][j] = color.RGBA{0, 0, 0, 255}
 				}
 			}
+		}
+	}
+	if *index >= 0 {
+		*index += 1
+		if *index >= len(title[0]) - len(sd.Visual[0]) {
+			*index = -1
 		}
 	}
 }

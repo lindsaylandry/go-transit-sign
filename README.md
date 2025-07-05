@@ -57,7 +57,7 @@ Use "transit-sign [command] --help" for more information about a command.
 
 ### NYC MTA
 
-TODO
+Request an API key at https://register.developer.obanyc.com/
 
 ### CTA
 
