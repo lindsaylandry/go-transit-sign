@@ -73,7 +73,11 @@ func DecodeBus(k string, stopID int, url string) (BusFeedMessage, error) {
 	slog.Debug(string(body))
 
 	err = json.Unmarshal(body, &bf)
+	if err != nil {
+		return bf, err
+	}
 
+	// TODO: only do this on debug level
 	jsonData, err := json.Marshal(bf)
 	slog.Debug(string(jsonData))
 
@@ -116,7 +120,11 @@ func DecodeTrain(k string, stopID int, url string) (TrainFeedMessage, error) {
 	slog.Debug(string(body))
 
 	err = json.Unmarshal(body, &tf)
+	if err != nil {
+		return tf, err
+	}
 
+	// TODO: only do this on debug level
 	jsonData, err := json.Marshal(tf)
 	slog.Debug(string(jsonData))
 

@@ -13,10 +13,9 @@ import (
 )
 
 type SignData struct {
-	Visual    [32][64]color.RGBA
-	Matrix    rgbmatrix.Matrix
-	Canvas    *rgbmatrix.Canvas
-	titleWrap int
+	Visual [32][64]color.RGBA
+	Matrix rgbmatrix.Matrix
+	Canvas *rgbmatrix.Canvas
 }
 
 func NewSignData() (*SignData, error) {
@@ -70,7 +69,7 @@ func PrintArrivalsToStdout(arrivals []Arrival, name, direction string) {
 func (sd *SignData) PrintArrivals(arrivals []Arrival, name, direction string) error {
 	// Reset canvas to black
 	for i, c := range sd.Visual {
-		for j, _ := range c {
+		for j := range c {
 			sd.Visual[i][j] = color.RGBA{0, 0, 0, 255}
 		}
 	}
@@ -180,7 +179,7 @@ func (sd *SignData) addTitle(title [][]uint8, index *int) {
 	}
 
 	for i, a := range title {
-		for j, _ := range a {
+		for j := range a {
 			if len(sd.Visual[0]) > j {
 				if a[j+normIndex] > 0 {
 					sd.Visual[i][j] = color.RGBA{0, 255, 255, 255}
