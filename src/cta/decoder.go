@@ -4,13 +4,17 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"log/slog"
 	"net/http"
 	"strconv"
 )
 
 type BusFeedMessage struct {
 	BusTimeResponse struct {
-		Error string `json:"error"`
+		Error []struct {
+			StopID string `json:"stpid"`
+			Message string `json:"msg"`
+		}`json:"error"`
 		Prd   []struct {
 			RouteDir           string `json:"rtdir"`
 			Name               string `json:"rt"`
@@ -60,13 +64,18 @@ func DecodeBus(k string, stopID int, url string) (BusFeedMessage, error) {
 	if resp.StatusCode >= 400 {
 		return bf, errors.New(http.StatusText(resp.StatusCode))
 	}
-
+	
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return bf, err
 	}
 
+	slog.Debug(string(body))
+
 	err = json.Unmarshal(body, &bf)
+
+	jsonData, err := json.Marshal(bf)
+	slog.Debug(string(jsonData))
 
 	return bf, err
 }
@@ -104,7 +113,12 @@ func DecodeTrain(k string, stopID int, url string) (TrainFeedMessage, error) {
 		return tf, err
 	}
 
+	slog.Debug(string(body))
+
 	err = json.Unmarshal(body, &tf)
+
+	jsonData, err := json.Marshal(tf)
+	slog.Debug(string(jsonData))
 
 	return tf, err
 }
