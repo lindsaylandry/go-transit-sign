@@ -3,6 +3,8 @@ GoLang Project for downloading transit data and broadcasting to LED Matrix signs
 
 This project currently broadcasts to Adafruit 64x32 LED Matrix for CTA buses and trains, and NYC MTA trains.
 
+![train sign example](docs/images/sign_emulated.png)
+
 ## Dependencies
 
 This app depends on the following library:
