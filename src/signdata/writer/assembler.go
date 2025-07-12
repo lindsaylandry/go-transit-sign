@@ -40,14 +40,14 @@ func CreateVisualString(stop string) ([][]uint8, error) {
 	return str, nil
 }
 
-func CreateVisualNextArrival(dest string, timeLeft string, maxWidth int) ([][]uint8, error) {
+func CreateVisualNextArrival(dest string, timeLeft string, maxWidth int) ([][]uint8, int, error) {
 	destMatrix, err := CreateVisualString(dest)
 	if err != nil {
-		return [][]uint8{}, err
+		return [][]uint8{}, 0, err
 	}
 	timeLeftMatrix, errStr := CreateVisualString(timeLeft)
 	if err != nil {
-		return [][]uint8{}, errStr
+		return [][]uint8{}, 0, errStr
 	}
 
 	str := make([][]uint8, len(destMatrix))
@@ -69,5 +69,9 @@ func CreateVisualNextArrival(dest string, timeLeft string, maxWidth int) ([][]ui
 		}
 	}
 
-	return str, nil
+	timeIndex := 0
+	if len(str) > 0 && len(timeLeftMatrix) > 0 {
+		timeIndex = len(str[0]) - len(timeLeftMatrix[0])
+	}
+	return str, timeIndex, nil
 }

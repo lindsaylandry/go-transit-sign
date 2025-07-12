@@ -4,14 +4,18 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"log/slog"
 	"net/http"
 	"strconv"
 )
 
 type BusFeedMessage struct {
 	BusTimeResponse struct {
-		Error string `json:"error"`
-		Prd   []struct {
+		Error []struct {
+			StopID  string `json:"stpid"`
+			Message string `json:"msg"`
+		} `json:"error"`
+		Prd []struct {
 			RouteDir           string `json:"rtdir"`
 			Name               string `json:"rt"`
 			PredictedCountdown string `json:"prdctdn"`
@@ -66,7 +70,16 @@ func DecodeBus(k string, stopID int, url string) (BusFeedMessage, error) {
 		return bf, err
 	}
 
+	slog.Debug(string(body))
+
 	err = json.Unmarshal(body, &bf)
+	if err != nil {
+		return bf, err
+	}
+
+	// TODO: only do this on debug level
+	jsonData, err := json.Marshal(bf)
+	slog.Debug(string(jsonData))
 
 	return bf, err
 }
@@ -104,7 +117,16 @@ func DecodeTrain(k string, stopID int, url string) (TrainFeedMessage, error) {
 		return tf, err
 	}
 
+	slog.Debug(string(body))
+
 	err = json.Unmarshal(body, &tf)
+	if err != nil {
+		return tf, err
+	}
+
+	// TODO: only do this on debug level
+	jsonData, err := json.Marshal(tf)
+	slog.Debug(string(jsonData))
 
 	return tf, err
 }

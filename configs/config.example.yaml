@@ -1,4 +1,5 @@
 emulate: true
+config: 2
 cta:
   train:
     stop_ids: 

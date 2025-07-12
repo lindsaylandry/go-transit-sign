@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/tfk1410/go-rpi-rgb-led-matrix"
@@ -67,6 +67,21 @@ func main() {
 		os.Setenv("MATRIX_EMULATOR", "1")
 	}
 
+	switch config.Log {
+	case 0:
+		slog.SetLogLoggerLevel(slog.Level(-8))
+	case 1:
+		slog.SetLogLoggerLevel(slog.LevelDebug)
+	case 2:
+		slog.SetLogLoggerLevel(slog.LevelInfo)
+	case 3:
+		slog.SetLogLoggerLevel(slog.LevelWarn)
+	case 4:
+		slog.SetLogLoggerLevel(slog.LevelError)
+	default:
+		slog.SetLogLoggerLevel(slog.LevelInfo)
+	}
+
 	err = rootCmd.Execute()
 	if err != nil {
 		panic(err)
@@ -121,8 +136,6 @@ func CTA() error {
 				if err := printArrivals(sd, arrivals, f.BusStop.Name, f.BusStop.Direction); err != nil {
 					panic(err)
 				}
-
-				time.Sleep(5 * time.Second)
 			}
 
 			for _, f := range tfs {
@@ -134,8 +147,6 @@ func CTA() error {
 				if err := printArrivals(sd, arrivals, f.Station.StopName, f.Station.DirectionID); err != nil {
 					panic(err)
 				}
-
-				time.Sleep(5 * time.Second)
 			}
 		}
 	}()
@@ -181,8 +192,6 @@ func NYCMTA() error {
 			if err := printArrivals(sd, arrivals, station.StopName, direction); err != nil {
 				panic(err)
 			}
-
-			time.Sleep(5 * time.Second)
 		}
 	}()
 	s := <-sigChan
