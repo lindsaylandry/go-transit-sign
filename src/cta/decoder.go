@@ -12,10 +12,10 @@ import (
 type BusFeedMessage struct {
 	BusTimeResponse struct {
 		Error []struct {
-			StopID string `json:"stpid"`
+			StopID  string `json:"stpid"`
 			Message string `json:"msg"`
-		}`json:"error"`
-		Prd   []struct {
+		} `json:"error"`
+		Prd []struct {
 			RouteDir           string `json:"rtdir"`
 			Name               string `json:"rt"`
 			PredictedCountdown string `json:"prdctdn"`
@@ -64,7 +64,7 @@ func DecodeBus(k string, stopID int, url string) (BusFeedMessage, error) {
 	if resp.StatusCode >= 400 {
 		return bf, errors.New(http.StatusText(resp.StatusCode))
 	}
-	
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return bf, err

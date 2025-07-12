@@ -68,7 +68,7 @@ func CreateVisualNextArrival(dest string, timeLeft string, maxWidth int) ([][]ui
 			str[i][len(str[i])-len(timeLeftMatrix[0])+j] = b
 		}
 	}
-	
+
 	timeIndex := 0
 	if len(str) > 0 && len(timeLeftMatrix) > 0 {
 		timeIndex = len(str[0]) - len(timeLeftMatrix[0])

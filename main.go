@@ -68,19 +68,19 @@ func main() {
 	}
 
 	switch config.Log {
-  case 0:
-    slog.SetLogLoggerLevel(slog.Level(-8))
-  case 1:
-    slog.SetLogLoggerLevel(slog.LevelDebug)
-  case 2:
-    slog.SetLogLoggerLevel(slog.LevelInfo)
-  case 3:
-    slog.SetLogLoggerLevel(slog.LevelWarn)
-  case 4:
-    slog.SetLogLoggerLevel(slog.LevelError)
-  default:
-    slog.SetLogLoggerLevel(slog.LevelInfo)
-  }
+	case 0:
+		slog.SetLogLoggerLevel(slog.Level(-8))
+	case 1:
+		slog.SetLogLoggerLevel(slog.LevelDebug)
+	case 2:
+		slog.SetLogLoggerLevel(slog.LevelInfo)
+	case 3:
+		slog.SetLogLoggerLevel(slog.LevelWarn)
+	case 4:
+		slog.SetLogLoggerLevel(slog.LevelError)
+	default:
+		slog.SetLogLoggerLevel(slog.LevelInfo)
+	}
 
 	err = rootCmd.Execute()
 	if err != nil {
