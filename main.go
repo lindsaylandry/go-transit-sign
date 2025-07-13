@@ -156,14 +156,20 @@ func CTA() error {
 }
 
 func NYCMTA() error {
-	//timezone := "America/New_York"
-	station, err := nycmta.GetStation(conf.NYCMTA.Train.StopIDs[0])
+	stations, err := nycmta.GetStations(conf.NYCMTA.Train.StopIDs)
 	if err != nil {
 		return err
 	}
 
 	// Get subway feeds from station trains
-	feeds := nycmta.GetMtaTrainDecoders(station.DaytimeRoutes)
+	// TODO: get feeds from all stations
+	feeds := nycmta.GetMtaTrainDecoders(stations[0].DaytimeRoutes)
+
+	tfs := []*nycmta.TrainFeed{}
+	for _, f := range *feeds {
+    tf := nycmta.NewTrainFeed(stations[0], conf.NYCMTA.APIKey, direction, f.URL)
+		tfs = append(tfs, tf)
+	}
 
 	sd, err := signdata.NewSignData()
 	if err != nil {
@@ -178,19 +184,16 @@ func NYCMTA() error {
 	go func() {
 		for {
 			arrivals := []signdata.Arrival{}
-			for _, f := range *feeds {
-				// TODO: get buses
-				t, err := nycmta.NewTrainFeed(station, conf.NYCMTA.APIKey, direction, f.URL)
+			for _, tf := range tfs {
+				arr, err := tf.GetArrivals()
 				if err != nil {
 					panic(err)
 				}
-
-				arr := t.GetArrivals()
 				arrivals = append(arrivals, arr...)
-			}
-
-			if err := printArrivals(sd, arrivals, station.StopName, direction); err != nil {
-				panic(err)
+			
+				if err := printArrivals(sd, arrivals, tf.Station.StopName, direction); err != nil {
+					panic(err)
+				}
 			}
 		}
 	}()

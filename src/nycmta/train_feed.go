@@ -12,29 +12,32 @@ type TrainFeed struct {
 	Station   Station
 	Key       string
 	Direction string
-
+	URL       string
+	
 	Feed *gtfs.FeedMessage
 }
 
-func NewTrainFeed(station Station, accessKey, direction, url string) (*TrainFeed, error) {
+func NewTrainFeed(station Station, accessKey, direction, url string) *TrainFeed {
 	t := TrainFeed{}
 
 	t.Key = accessKey
 	t.Direction = direction
-
 	t.Station = station
+	t.URL = url
 
-	feed, err := DecodeNYCMTA(accessKey, url)
-	t.Feed = feed
-
-	return &t, err
+	return &t
 }
 
-func (t *TrainFeed) GetArrivals() []signdata.Arrival {
+func (t *TrainFeed) GetArrivals() ([]signdata.Arrival, error) {
 	stopID := t.Station.GTFSStopID + t.Direction
 	now := time.Now()
 	arrivals := []signdata.Arrival{}
-	for _, entity := range t.Feed.Entity {
+
+	feed, err := DecodeNYCMTA(t.Key, t.URL)
+	if err != nil {
+		return arrivals, err
+	}
+	for _, entity := range feed.Entity {
 		trip := entity.GetTripUpdate()
 		if trip != nil {
 			stopTimes := trip.StopTimeUpdate
@@ -62,5 +65,5 @@ func (t *TrainFeed) GetArrivals() []signdata.Arrival {
 		}
 	}
 
-	return arrivals
+	return arrivals, err
 }
