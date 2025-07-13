@@ -5,6 +5,7 @@ import (
 	"image/color"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/tfk1410/go-rpi-rgb-led-matrix"
 
@@ -12,7 +13,7 @@ import (
 )
 
 type SignData struct {
-	Visual [32][64]uint8
+	Visual [32][64]color.RGBA
 	Matrix rgbmatrix.Matrix
 	Canvas *rgbmatrix.Canvas
 }
@@ -61,62 +62,97 @@ func PrintArrivalsToStdout(arrivals []Arrival, name, direction string) {
 
 	fmt.Println(dir)
 	fmt.Println()
+
+	time.Sleep(5 * time.Second)
 }
 
 func (sd *SignData) PrintArrivals(arrivals []Arrival, name, direction string) error {
-	assembly, err := writer.CreateVisualString(name)
-	if err != nil {
-		return err
+	// Reset canvas to black
+	for i, c := range sd.Visual {
+		for j := range c {
+			sd.Visual[i][j] = color.RGBA{0, 0, 0, 255}
+		}
 	}
-	sd.addTitle(assembly)
 
 	if len(arrivals) == 0 {
-		fmt.Println("None")
-		return nil
+		arr := Arrival{Label: "None", Secs: -1}
+		arrivals = []Arrival{arr}
 	}
 
 	sort.Slice(arrivals, func(i, j int) bool { return arrivals[i].Secs < arrivals[j].Secs })
 	var str string
 	for i, a := range arrivals {
-		if a.Secs < 30 {
+		if a.Secs == -1 {
+			str = "none"
+		} else if a.Secs < 30 {
 			str = "now"
 		} else {
 			str = fmt.Sprintf("%d min", a.Secs/60)
 		}
-		assembly, err = writer.CreateVisualNextArrival(a.Label, str, 64)
+		label, color := normalizeTrain(a.Label)
+		assembly, timeIndex, err := writer.CreateVisualNextArrival(label, str, 64)
 		if err != nil {
 			return err
 		}
-		sd.addArrival(assembly, i)
+		// TODO: separately add station/bus and arrival time to canvas for more colors
+		sd.addArrival(assembly, color, timeIndex, i)
 	}
 
 	dir := getDirection(direction)
 
-	assembly, err = writer.CreateVisualString(dir)
+	assembly, err := writer.CreateVisualString(dir)
 	if err != nil {
 		return err
 	}
 	sd.addDirection(assembly)
 
-	return sd.WriteToMatrix()
+	// Title going last (scroll through title)
+	titleAssembly, err := writer.CreateVisualString(name)
+	if err != nil {
+		return err
+	}
+	index := -1
+	if len(titleAssembly[0]) > len(sd.Visual[0]) {
+		index = 0
+		// add as many spaces as width of canvas
+		for i := 0; i < len(sd.Visual[0]); i += 2 {
+			name = name + " "
+		}
+		titleAssembly, err = writer.CreateVisualString(name)
+		if err != nil {
+			return err
+		}
+	}
+
+	for index >= 0 {
+		sd.addTitle(titleAssembly, &index)
+		if err := sd.WriteToMatrix(); err != nil {
+			return err
+		}
+
+		if index == 1 {
+			time.Sleep(1 * time.Second)
+		}
+
+		time.Sleep(10 * time.Microsecond)
+
+		if index == -1 {
+			sd.addTitle(titleAssembly, &index)
+			if err := sd.WriteToMatrix(); err != nil {
+				return err
+			}
+		}
+	}
+	time.Sleep(5 * time.Second)
+
+	return nil
 }
 
 func (sd *SignData) WriteToMatrix() error {
 	bounds := sd.Canvas.Bounds()
-	// first reset canvas to black
 	for x := bounds.Min.X; x < bounds.Max.X; x++ {
 		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
-			if sd.Visual[y][x] > 0 {
-				sd.Canvas.Set(x, y, color.RGBA{255, 0, 0, 0})
-			}
-		}
-	}
-	// next write to canvas
-	for x := bounds.Min.X; x < bounds.Max.X; x++ {
-		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
-			if sd.Visual[y][x] > 0 {
-				sd.Canvas.Set(x, y, color.RGBA{255, 0, 0, 255})
-			}
+			sd.Canvas.Set(x, y, sd.Visual[y][x])
 		}
 	}
 	return sd.Canvas.Render()
@@ -136,18 +172,32 @@ func (sd *SignData) WriteTestMatrix() error {
 	return nil
 }
 
-func (sd *SignData) addTitle(title [][]uint8) {
+func (sd *SignData) addTitle(title [][]uint8, index *int) {
+	normIndex := 0
+	if *index > 0 {
+		normIndex = *index
+	}
+
 	for i, a := range title {
-		for j, b := range a {
-			// Truncate for now
+		for j := range a {
 			if len(sd.Visual[0]) > j {
-				sd.Visual[i][j] = b
+				if a[j+normIndex] > 0 {
+					sd.Visual[i][j] = color.RGBA{0, 255, 255, 255}
+				} else {
+					sd.Visual[i][j] = color.RGBA{0, 0, 0, 255}
+				}
 			}
+		}
+	}
+	if *index >= 0 {
+		*index += 1
+		if *index >= len(title[0])-len(sd.Visual[0]) {
+			*index = -1
 		}
 	}
 }
 
-func (sd *SignData) addArrival(arrival [][]uint8, index int) {
+func (sd *SignData) addArrival(arrival [][]uint8, col color.RGBA, timeIndex, index int) {
 	// Title takes top 6 pixel rows
 	start := 6 * (index + 1)
 
@@ -155,7 +205,15 @@ func (sd *SignData) addArrival(arrival [][]uint8, index int) {
 		for j, b := range a {
 			// Truncate for now
 			if len(sd.Visual[0]) > j && len(sd.Visual) > i+start+1 {
-				sd.Visual[i+start][j] = b
+				if b > 0 {
+					if j < timeIndex {
+						sd.Visual[i+start][j] = col
+					} else {
+						sd.Visual[i+start][j] = color.RGBA{255, 255, 255, 255}
+					}
+				} else {
+					sd.Visual[i+start][j] = color.RGBA{0, 0, 0, 255}
+				}
 			}
 		}
 	}
@@ -169,10 +227,38 @@ func (sd *SignData) addDirection(direction [][]uint8) {
 		for j, b := range a {
 			// Truncate for now
 			if len(sd.Visual[0]) > j && len(sd.Visual) > i+start+1 {
-				sd.Visual[i+start][j] = b
+				if b > 0 {
+					sd.Visual[i+start][j] = color.RGBA{255, 0, 0, 255}
+				} else {
+					sd.Visual[i+start][j] = color.RGBA{0, 0, 0, 255}
+				}
 			}
 		}
 	}
+}
+
+func normalizeTrain(train string) (string, color.RGBA) {
+	var trn string
+	var col color.RGBA
+	switch strings.ToUpper(train) {
+	case "ORG":
+		trn = "Orange"
+		col = color.RGBA{255, 165, 0, 255}
+	case "PNK":
+		trn = "Pink"
+		col = color.RGBA{255, 209, 220, 255}
+	case "GRN":
+		trn = "Green"
+		col = color.RGBA{0, 255, 0, 255}
+	case "BRN":
+		trn = "Brown"
+		col = color.RGBA{150, 75, 0, 255}
+	default:
+		trn = train
+		col = color.RGBA{255, 255, 255, 255}
+	}
+
+	return trn, col
 }
 
 func getDirection(direction string) string {

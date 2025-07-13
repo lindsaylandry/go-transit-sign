@@ -7,6 +7,7 @@ import (
 
 type Config struct {
 	Emulate bool   `yaml:"emulate"`
+	Log     int    `yaml:"log"`
 	CTA     CTA    `yaml:"cta"`
 	NYCMTA  NYCMTA `yaml:"nycmta"`
 }
