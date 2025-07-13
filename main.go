@@ -167,7 +167,7 @@ func NYCMTA() error {
 
 	tfs := []*nycmta.TrainFeed{}
 	for _, f := range *feeds {
-    tf := nycmta.NewTrainFeed(stations[0], conf.NYCMTA.APIKey, direction, f.URL)
+		tf := nycmta.NewTrainFeed(stations[0], conf.NYCMTA.APIKey, direction, f.URL)
 		tfs = append(tfs, tf)
 	}
 
@@ -190,7 +190,7 @@ func NYCMTA() error {
 					panic(err)
 				}
 				arrivals = append(arrivals, arr...)
-			
+
 				if err := printArrivals(sd, arrivals, tf.Station.StopName, direction); err != nil {
 					panic(err)
 				}

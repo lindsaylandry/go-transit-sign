@@ -13,7 +13,7 @@ type TrainFeed struct {
 	Key       string
 	Direction string
 	URL       string
-	
+
 	Feed *gtfs.FeedMessage
 }
 

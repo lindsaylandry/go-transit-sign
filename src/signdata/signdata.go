@@ -5,8 +5,8 @@ import (
 	"image/color"
 	"log/slog"
 	"sort"
-	"strings"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/tfk1410/go-rpi-rgb-led-matrix"
@@ -130,13 +130,13 @@ func (sd *SignData) PrintArrivals(arrivals []Arrival, name, direction string) er
 	// Non-scrolling title
 	if index == -1 {
 		titleAssembly, err = writer.CreateVisualString(name)
-    sd.addTitle(titleAssembly, &index)
+		sd.addTitle(titleAssembly, &index)
 		if err != nil {
-      return err
-    }
+			return err
+		}
 		if err := sd.WriteToMatrix(); err != nil {
-      return err
-    }
+			return err
+		}
 	}
 
 	// Scrolling title
