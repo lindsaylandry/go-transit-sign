@@ -184,13 +184,11 @@ func NYCMTA() error {
 
 	go func() {
 		for {
-			arrivals := []signdata.Arrival{}
 			for _, tf := range tfs {
-				arr, err := tf.GetArrivals()
+				arrivals, err := tf.GetArrivals()
 				if err != nil {
 					panic(err)
 				}
-				arrivals = append(arrivals, arr...)
 
 				if err := printArrivals(sd, arrivals, tf.Station.StopName, tf.Direction); err != nil {
 					panic(err)
