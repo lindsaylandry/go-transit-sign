@@ -161,15 +161,11 @@ func NYCMTA() error {
 
 	tfs := []*nycmta.TrainFeed{}
 	for _, s := range stations {
-		// Get subway feeds from station trains
-		feeds := nycmta.GetMtaTrainDecoders(s.DaytimeRoutes)
-		for _, f := range *feeds {
-			tf := nycmta.NewTrainFeed(s, conf.NYCMTA.APIKey, "N", f.URL)
-			tfs = append(tfs, tf)
+		tf := nycmta.NewTrainFeed(s, conf.NYCMTA.APIKey, "N", s.DaytimeRoutes)
+		tfs = append(tfs, tf)
 
-			tf = nycmta.NewTrainFeed(s, conf.NYCMTA.APIKey, "S", f.URL)
-			tfs = append(tfs, tf)
-		}
+		tf = nycmta.NewTrainFeed(s, conf.NYCMTA.APIKey, "S", s.DaytimeRoutes)
+		tfs = append(tfs, tf)
 	}
 
 	sd, err := signdata.NewSignData()
