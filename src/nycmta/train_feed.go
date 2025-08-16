@@ -3,8 +3,6 @@ package nycmta
 import (
 	"time"
 
-	"github.com/MobilityData/gtfs-realtime-bindings/golang/gtfs"
-
 	"github.com/lindsaylandry/go-transit-sign/src/signdata"
 )
 
@@ -13,8 +11,6 @@ type TrainFeed struct {
 	Key       string
 	Direction string
 	URL       string
-
-	Feed *gtfs.FeedMessage
 }
 
 func NewTrainFeed(station Station, accessKey, direction, url string) *TrainFeed {

@@ -16,7 +16,6 @@ import (
 	"github.com/lindsaylandry/go-transit-sign/src/signdata"
 )
 
-var direction string
 var led bool
 var conf config.Config
 
@@ -54,7 +53,6 @@ func main() {
 	rootCmd.AddCommand(ctaCmd)
 	rootCmd.AddCommand(testMatrix)
 
-	rootCmd.PersistentFlags().StringVarP(&direction, "direction", "d", "N", "direction (trains only)")
 	rootCmd.PersistentFlags().BoolVarP(&led, "led", "l", false, "output to led matrix")
 
 	config, err := config.NewConfig()
@@ -161,14 +159,17 @@ func NYCMTA() error {
 		return err
 	}
 
-	// Get subway feeds from station trains
-	// TODO: get feeds from all stations
-	feeds := nycmta.GetMtaTrainDecoders(stations[0].DaytimeRoutes)
-
 	tfs := []*nycmta.TrainFeed{}
-	for _, f := range *feeds {
-		tf := nycmta.NewTrainFeed(stations[0], conf.NYCMTA.APIKey, direction, f.URL)
-		tfs = append(tfs, tf)
+	for _, s := range stations {
+		// Get subway feeds from station trains
+		feeds := nycmta.GetMtaTrainDecoders(s.DaytimeRoutes)
+		for _, f := range *feeds {
+			tf := nycmta.NewTrainFeed(s, conf.NYCMTA.APIKey, "N", f.URL)
+			tfs = append(tfs, tf)
+
+			tf = nycmta.NewTrainFeed(s, conf.NYCMTA.APIKey, "S", f.URL)
+			tfs = append(tfs, tf)
+		}
 	}
 
 	sd, err := signdata.NewSignData()
@@ -191,7 +192,7 @@ func NYCMTA() error {
 				}
 				arrivals = append(arrivals, arr...)
 
-				if err := printArrivals(sd, arrivals, tf.Station.StopName, direction); err != nil {
+				if err := printArrivals(sd, arrivals, tf.Station.StopName, tf.Direction); err != nil {
 					panic(err)
 				}
 			}
