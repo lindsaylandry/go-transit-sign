@@ -3,7 +3,9 @@ package signdata
 import (
 	"fmt"
 	"image/color"
+	"log/slog"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -82,6 +84,7 @@ func (sd *SignData) PrintArrivals(arrivals []Arrival, name, direction string) er
 	sort.Slice(arrivals, func(i, j int) bool { return arrivals[i].Secs < arrivals[j].Secs })
 	var str string
 	for i, a := range arrivals {
+		slog.Debug(a.Label, strconv.FormatInt(a.Secs/60, 10), "min")
 		if a.Secs == -1 {
 			str = "none"
 		} else if a.Secs < 30 {
@@ -124,6 +127,19 @@ func (sd *SignData) PrintArrivals(arrivals []Arrival, name, direction string) er
 		}
 	}
 
+	// Non-scrolling title
+	if index == -1 {
+		titleAssembly, err = writer.CreateVisualString(name)
+		sd.addTitle(titleAssembly, &index)
+		if err != nil {
+			return err
+		}
+		if err := sd.WriteToMatrix(); err != nil {
+			return err
+		}
+	}
+
+	// Scrolling title
 	for index >= 0 {
 		sd.addTitle(titleAssembly, &index)
 		if err := sd.WriteToMatrix(); err != nil {

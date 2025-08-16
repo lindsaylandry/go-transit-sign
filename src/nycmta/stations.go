@@ -28,21 +28,29 @@ type Station struct {
 	CapitalOutageSB     string  `csv:"Capital Outage SB"`
 }
 
-func GetStation(stopID string) (Station, error) {
-	station := Station{}
-	stations, err := readStations("data/nyc-subway-stations.csv")
+func GetStations(stopIDs []string) ([]Station, error) {
+	stations := []Station{}
+	stns, err := readStations("data/nyc-subway-stations.csv")
 	if err != nil {
-		return station, err
+		return stations, err
 	}
 
 	// Find station, return error if not found
-	for _, s := range stations {
-		if s.GTFSStopID == stopID {
-			return s, nil
+	for _, id := range stopIDs {
+		found := false
+		for _, s := range stns {
+			if s.GTFSStopID == id {
+				stations = append(stations, s)
+				found = true
+				break
+			}
+		}
+		if !found {
+			return stations, fmt.Errorf("Could not find station %s", id)
 		}
 	}
 
-	return station, fmt.Errorf("Could not find station %s", stopID)
+	return stations, nil
 }
 
 func readStations(filepath string) ([]Station, error) {
