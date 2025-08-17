@@ -15,9 +15,10 @@ import (
 )
 
 type SignData struct {
-	Visual [32][64]color.RGBA
-	Matrix rgbmatrix.Matrix
-	Canvas *rgbmatrix.Canvas
+	Visual      [32][64]color.RGBA
+	Matrix      rgbmatrix.Matrix
+	Canvas      *rgbmatrix.Canvas
+	MaxArrivals int
 }
 
 func NewSignData() (*SignData, error) {
@@ -41,6 +42,9 @@ func NewSignData() (*SignData, error) {
 
 	sd.Matrix = m
 
+	// Max number of transit arrival times that fit on screen
+	sd.MaxArrivals = len(sd.Visual)/6 - 2
+
 	return &sd, nil
 }
 
@@ -60,10 +64,12 @@ func PrintArrivalsToStdout(arrivals []Arrival, name, direction string) {
 			fmt.Printf("%s %d min\n", a.Label, a.Secs/60)
 		}
 	}
-	dir := getDirection(direction)
 
-	fmt.Println(dir)
-	fmt.Println()
+	if direction != "" {
+		dir := getDirection(direction)
+		fmt.Println(dir)
+		fmt.Println()
+	}
 
 	time.Sleep(5 * time.Second)
 }
@@ -83,22 +89,26 @@ func (sd *SignData) PrintArrivals(arrivals []Arrival, name, direction string) er
 
 	sort.Slice(arrivals, func(i, j int) bool { return arrivals[i].Secs < arrivals[j].Secs })
 	var str string
+	arrs := 0
 	for i, a := range arrivals {
-		slog.Debug(a.Label, strconv.FormatInt(a.Secs/60, 10), "min")
-		if a.Secs == -1 {
-			str = "none"
-		} else if a.Secs < 30 {
-			str = "now"
-		} else {
-			str = fmt.Sprintf("%d min", a.Secs/60)
+		if arrs < sd.MaxArrivals {
+			slog.Debug(a.Label, strconv.FormatInt(a.Secs/60, 10), "min")
+			if a.Secs == -1 {
+				str = "none"
+			} else if a.Secs < 30 {
+				str = "now"
+			} else {
+				str = fmt.Sprintf("%d min", a.Secs/60)
+			}
+			label, color := normalizeTrain(a.Label)
+			assembly, timeIndex, err := writer.CreateVisualNextArrival(label, str, 64)
+			if err != nil {
+				return err
+			}
+			// TODO: separately add station/bus and arrival time to canvas for more colors
+			sd.addArrival(assembly, color, timeIndex, i)
+			arrs += 1
 		}
-		label, color := normalizeTrain(a.Label)
-		assembly, timeIndex, err := writer.CreateVisualNextArrival(label, str, 64)
-		if err != nil {
-			return err
-		}
-		// TODO: separately add station/bus and arrival time to canvas for more colors
-		sd.addArrival(assembly, color, timeIndex, i)
 	}
 
 	dir := getDirection(direction)
