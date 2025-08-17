@@ -36,7 +36,7 @@ func GetBusStops(stopIDs []int) ([]BusStop, error) {
 			}
 		}
 		if !found {
-			return busstops, fmt.Errorf("Could not find station %s", id)
+			return busstops, fmt.Errorf("Could not find station %d", id)
 		}
 	}
 
