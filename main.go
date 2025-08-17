@@ -168,6 +168,17 @@ func NYCMTA() error {
 		tfs = append(tfs, tf)
 	}
 
+	busstops, err := nycmta.GetBusStops(conf.NYCMTA.Bus.StopIDs)
+	if err != nil {
+		return err
+	}
+
+	bfs := []*nycmta.BusFeed{}
+	for _, b := range busstops {
+		bf := nycmta.NewBusFeed(b, conf.NYCMTA.APIKey)
+		bfs = append(bfs, bf)
+	}
+
 	sd, err := signdata.NewSignData()
 	if err != nil {
 		return err
@@ -180,6 +191,17 @@ func NYCMTA() error {
 
 	go func() {
 		for {
+			for _, f := range bfs {
+				arrivals, err := f.GetArrivals()
+				if err != nil {
+					panic(err)
+				}
+
+				if err := printArrivals(sd, arrivals, f.BusStop.StopName, "BUS"); err != nil {
+					panic(err)
+				}
+			}
+
 			for _, tf := range tfs {
 				arrivals, err := tf.GetArrivals()
 				if err != nil {

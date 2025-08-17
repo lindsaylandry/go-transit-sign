@@ -13,9 +13,9 @@ type Config struct {
 }
 
 type NYCMTA struct {
-	APIKey string  `yaml:"api_key"`
-	Bus    MTAInfo `yaml:"bus"`
-	Train  MTAInfo `yaml:"train"`
+	APIKey string   `yaml:"api_key"`
+	Bus    MTABus   `yaml:"bus"`
+	Train  MTATrain `yaml:"train"`
 }
 
 type CTA struct {
@@ -23,7 +23,11 @@ type CTA struct {
 	Train CTAInfo `yaml:"train"`
 }
 
-type MTAInfo struct {
+type MTABus struct {
+	StopIDs []int `yaml:"stop_ids"`
+}
+
+type MTATrain struct {
 	StopIDs []string `yaml:"stop_ids"`
 }
 
