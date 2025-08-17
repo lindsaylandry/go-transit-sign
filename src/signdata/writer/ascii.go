@@ -766,5 +766,16 @@ func getLetters() map[rune]Letter {
 			{0, 0, 0},
 		},
 	}
+
+	letters['0'] = Letter{
+    Design: [6][]uint8{
+      {0, 1, 0},
+      {1, 0, 1},
+      {1, 0, 1},
+      {1, 0, 1},
+      {0, 1, 0},
+      {0, 0, 0},
+    },
+  }
 	return letters
 }

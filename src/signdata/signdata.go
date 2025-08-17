@@ -88,17 +88,16 @@ func (sd *SignData) PrintArrivals(arrivals []Arrival, name, direction string) er
 	}
 
 	sort.Slice(arrivals, func(i, j int) bool { return arrivals[i].Secs < arrivals[j].Secs })
-	var str string
 	arrs := 0
 	for i, a := range arrivals {
 		if arrs < sd.MaxArrivals {
-			slog.Debug(a.Label, strconv.FormatInt(a.Secs/60, 10), "min")
+			mins := strconv.FormatInt(a.Secs/60, 10)
+			str := fmt.Sprintf("%s min", mins)
+			slog.Debug(a.Label, mins, "min")
 			if a.Secs == -1 {
 				str = "none"
-			} else if a.Secs < 30 {
+			} else if a.Secs <= 30 {
 				str = "now"
-			} else {
-				str = fmt.Sprintf("%d min", a.Secs/60)
 			}
 			label, color := normalizeTrain(a.Label)
 			assembly, timeIndex, err := writer.CreateVisualNextArrival(label, str, 64)
