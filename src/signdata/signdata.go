@@ -269,9 +269,9 @@ func normalizeTrain(train string) (string, color.RGBA) {
 	case "ORG":
 		trn = "Orange"
 		col = color.RGBA{255, 145, 0, 255}
-	case "PNK":
+	case "PINK":
 		trn = "Pink"
-		col = color.RGBA{255, 209, 220, 255}
+		col = color.RGBA{255, 80, 180, 255}
 	case "G":
 		trn = "Green"
 		col = color.RGBA{0, 195, 0, 255}
