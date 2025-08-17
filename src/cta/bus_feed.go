@@ -35,7 +35,9 @@ func (b *BusFeed) GetArrivals() ([]signdata.Arrival, error) {
 		arr.Label = f.Name
 
 		mins := 0
-		if f.PredictedCountdown != "DUE" {
+		if f.PredictedCountdown == "DLY" {
+			continue
+		} else if f.PredictedCountdown != "DUE" {
 			mins, err = strconv.Atoi(f.PredictedCountdown)
 			if err != nil {
 				return arrivals, err

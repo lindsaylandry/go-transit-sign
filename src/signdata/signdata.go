@@ -268,7 +268,7 @@ func normalizeTrain(train string) (string, color.RGBA) {
 	switch strings.ToUpper(train) {
 	case "ORG":
 		trn = "Orange"
-		col = color.RGBA{255, 165, 0, 255}
+		col = color.RGBA{255, 145, 0, 255}
 	case "PNK":
 		trn = "Pink"
 		col = color.RGBA{255, 209, 220, 255}
@@ -278,6 +278,18 @@ func normalizeTrain(train string) (string, color.RGBA) {
 	case "BRN":
 		trn = "Brown"
 		col = color.RGBA{150, 75, 0, 255}
+	case "BLU":
+		trn = "Blue"
+		col = color.RGBA{0, 100, 255, 255}
+	case "RED":
+		trn = "Red"
+		col = color.RGBA{255, 0, 0, 255}
+	case "P":
+		trn = "Purple"
+		col = color.RGBA{165, 0, 255, 255}
+	case "Y":
+		trn = "Yellow"
+		col = color.RGBA{255, 255, 0, 255}
 	default:
 		trn = train
 		col = color.RGBA{255, 255, 255, 255}
