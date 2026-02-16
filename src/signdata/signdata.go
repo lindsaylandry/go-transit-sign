@@ -52,7 +52,7 @@ func PrintArrivalsToStdout(arrivals []Arrival, name, direction string) {
 	fmt.Println(name)
 
 	if len(arrivals) == 0 {
-		fmt.Println("No trains arriving at this station today")
+		fmt.Println("NONE")
 		return
 	}
 
