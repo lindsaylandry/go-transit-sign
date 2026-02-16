@@ -8,6 +8,17 @@ func getLetters() map[rune]Letter {
 	letters := make(map[rune]Letter)
 
 	// basic ascii letters and numbers
+	letters['\''] = Letter{
+		Design: [6][]uint8{
+			{1},
+			{1},
+			{0},
+			{0},
+			{0},
+			{0},
+		},
+	}
+
 	letters['/'] = Letter{
 		Design: [6][]uint8{
 			{0, 0, 0, 0, 1},
