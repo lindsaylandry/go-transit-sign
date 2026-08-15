@@ -99,13 +99,13 @@ func (sd *SignData) PrintArrivals(arrivals []Arrival, name, direction string) er
 			} else if a.Secs <= 30 {
 				str = "now"
 			}
-			label, color := normalizeTrain(a.Label)
+			label, color, half := normalizeTrain(a.Label)
 			assembly, timeIndex, err := writer.CreateVisualNextArrival(label, str, 64)
 			if err != nil {
 				return err
 			}
 			// TODO: separately add station/bus and arrival time to canvas for more colors
-			sd.addArrival(assembly, color, timeIndex, i)
+			sd.addArrival(assembly, color, half, timeIndex, i)
 			arrs += 1
 		}
 	}
@@ -206,8 +206,10 @@ func (sd *SignData) addTitle(title [][]uint8, index *int) {
 	for i, a := range title {
 		for j := range a {
 			if len(sd.Visual[0]) > j {
-				if a[j+normIndex] > 0 {
+				if a[j+normIndex] == 2 {
 					sd.Visual[i][j] = color.RGBA{0, 255, 255, 255}
+				} else if a[j+normIndex] == 1 {
+					sd.Visual[i][j] = color.RGBA{0, 127, 127, 255}
 				} else {
 					sd.Visual[i][j] = color.RGBA{0, 0, 0, 255}
 				}
@@ -222,7 +224,7 @@ func (sd *SignData) addTitle(title [][]uint8, index *int) {
 	}
 }
 
-func (sd *SignData) addArrival(arrival [][]uint8, col color.RGBA, timeIndex, index int) {
+func (sd *SignData) addArrival(arrival [][]uint8, col, half color.RGBA, timeIndex, index int) {
 	// Title takes top 6 pixel rows
 	start := 6 * (index + 1)
 
@@ -230,11 +232,17 @@ func (sd *SignData) addArrival(arrival [][]uint8, col color.RGBA, timeIndex, ind
 		for j, b := range a {
 			// Truncate for now
 			if len(sd.Visual[0]) > j && len(sd.Visual) > i+start+1 {
-				if b > 0 {
+				if b == 2 {
 					if j < timeIndex {
 						sd.Visual[i+start][j] = col
 					} else {
 						sd.Visual[i+start][j] = color.RGBA{255, 255, 255, 255}
+					}
+				} else if b == 1 {
+					if j < timeIndex {
+						sd.Visual[i+start][j] = half
+					} else {
+						sd.Visual[i+start][j] = color.RGBA{127, 127, 127, 255}
 					}
 				} else {
 					sd.Visual[i+start][j] = color.RGBA{0, 0, 0, 255}
@@ -252,8 +260,10 @@ func (sd *SignData) addDirection(direction [][]uint8) {
 		for j, b := range a {
 			// Truncate for now
 			if len(sd.Visual[0]) > j && len(sd.Visual) > i+start+1 {
-				if b > 0 {
+				if b == 2 {
 					sd.Visual[i+start][j] = color.RGBA{255, 0, 0, 255}
+				} else if b == 1 {
+					sd.Visual[i+start][j] = color.RGBA{127, 0, 0, 255}
 				} else {
 					sd.Visual[i+start][j] = color.RGBA{0, 0, 0, 255}
 				}
@@ -262,40 +272,49 @@ func (sd *SignData) addDirection(direction [][]uint8) {
 	}
 }
 
-func normalizeTrain(train string) (string, color.RGBA) {
+func normalizeTrain(train string) (string, color.RGBA, color.RGBA) {
 	var trn string
-	var col color.RGBA
+	var col, half color.RGBA
 	switch strings.ToUpper(train) {
 	case "ORG":
 		trn = "Orange"
 		col = color.RGBA{255, 145, 0, 255}
+		half = color.RGBA{127, 72, 0, 255}
 	case "PINK":
 		trn = "Pink"
 		col = color.RGBA{255, 80, 180, 255}
+		half = color.RGBA{127, 40, 90, 255}
 	case "G":
 		trn = "Green"
 		col = color.RGBA{0, 195, 0, 255}
+		half = color.RGBA{0, 97, 0, 255}
 	case "BRN":
 		trn = "Brown"
 		col = color.RGBA{150, 75, 0, 255}
+		half = color.RGBA{75, 37, 0, 255}
 	case "BLUE":
 		trn = "Blue"
 		col = color.RGBA{0, 100, 255, 255}
+		half = color.RGBA{0, 50, 127, 255}
 	case "RED":
 		trn = "Red"
 		col = color.RGBA{255, 0, 0, 255}
+		half = color.RGBA{127, 0, 0, 255}
 	case "P":
 		trn = "Purple"
 		col = color.RGBA{165, 0, 255, 255}
+		half = color.RGBA{82, 0, 127, 255}
 	case "Y":
 		trn = "Yellow"
 		col = color.RGBA{255, 255, 0, 255}
+		half = color.RGBA{127, 127, 0, 255}
 	default:
 		trn = train
 		col = color.RGBA{255, 255, 255, 255}
+		half = color.RGBA{127, 127, 127, 255}
 	}
 
-	return trn, col
+	return trn, col, half
 }
 
 func getDirection(direction string) string {
