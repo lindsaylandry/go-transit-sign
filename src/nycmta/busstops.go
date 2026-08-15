@@ -20,7 +20,7 @@ type BusStop struct {
 
 func GetBusStops(stopIDs []int) ([]BusStop, error) {
 	busstops := []BusStop{}
-	stps, err := readBusStops("data/nyc-busstops.csv")
+	stps, err := readBusStops("data/nyc/nyc-busstops.csv")
 	if err != nil {
 		return busstops, err
 	}

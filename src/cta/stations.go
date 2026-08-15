@@ -28,7 +28,7 @@ type Station struct {
 
 func GetStation(stopID int) (Station, error) {
 	station := Station{}
-	stations, err := readStations("data/cta-rail-stations.csv")
+	stations, err := readStations("data/cta/cta-rail-stations.csv")
 	if err != nil {
 		return station, err
 	}

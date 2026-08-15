@@ -29,7 +29,7 @@ type BusStop struct {
 
 func GetBusStops(stopIDs []int) ([]BusStop, error) {
 	stops := []BusStop{}
-	data, err := readBusStops("data/cta-bus-stations.kml")
+	data, err := readBusStops("data/cta/cta-bus-stations.kml")
 	if err != nil {
 		return stops, err
 	}

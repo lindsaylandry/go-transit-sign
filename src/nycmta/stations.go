@@ -30,7 +30,7 @@ type Station struct {
 
 func GetStations(stopIDs []string) ([]Station, error) {
 	stations := []Station{}
-	stns, err := readStations("data/nyc-subway-stations.csv")
+	stns, err := readStations("data/nyc/nyc-subway-stations.csv")
 	if err != nil {
 		return stations, err
 	}
