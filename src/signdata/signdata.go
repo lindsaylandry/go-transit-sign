@@ -240,10 +240,10 @@ func (sd *SignData) addArrival(arrival [][]uint8, col, half color.RGBA, timeInde
 					}
 				} else if b == 1 {
 					if j < timeIndex {
-            sd.Visual[i+start][j] = half
-          } else {
-            sd.Visual[i+start][j] = color.RGBA{127, 127, 127, 255}
-          }
+						sd.Visual[i+start][j] = half
+					} else {
+						sd.Visual[i+start][j] = color.RGBA{127, 127, 127, 255}
+					}
 				} else {
 					sd.Visual[i+start][j] = color.RGBA{0, 0, 0, 255}
 				}
