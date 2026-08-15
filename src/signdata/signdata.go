@@ -252,8 +252,10 @@ func (sd *SignData) addDirection(direction [][]uint8) {
 		for j, b := range a {
 			// Truncate for now
 			if len(sd.Visual[0]) > j && len(sd.Visual) > i+start+1 {
-				if b > 0 {
+				if b == 2 {
 					sd.Visual[i+start][j] = color.RGBA{255, 0, 0, 255}
+				} else if b == 1 {
+					sd.Visual[i+start][j] = color.RGBA{127, 0, 0, 127}
 				} else {
 					sd.Visual[i+start][j] = color.RGBA{0, 0, 0, 255}
 				}
